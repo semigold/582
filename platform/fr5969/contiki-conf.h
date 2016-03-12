@@ -34,9 +34,6 @@
 #define CONTIKI_CONF_H_
 
 #include <inttypes.h>
-#ifndef WIN32_LEAN_AND_MEAN
-#include <sys/select.h>
-#endif
 
 struct select_callback {
   int  (* set_fd)(fd_set *fdr, fd_set *fdw);

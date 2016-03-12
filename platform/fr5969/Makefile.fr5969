@@ -1,6 +1,7 @@
-CONTIKI_TARGET_SOURCEFILES += contiki-wismote-platform.c \
+#CONTIKI_TARGET_SOURCEFILES += contiki-wismote-platform.c \
 	sht11.c sht11-sensor.c light-sensor.c battery-sensor.c \
 	button-sensor.c radio-sensor.c
+CONTIKI_TARGETSOURCEFILES +=
 
 #ARCH=spi.c ds2411.c xmem.c i2c.c node-id.c sensors.c cfs-coffee.c \
      cc2520.c cc2520-arch.c cc2520-arch-sfd.c \
@@ -16,7 +17,7 @@ ARCH=
 
 CONTIKI_TARGET_DIRS = . dev apps net
 ifndef CONTIKI_TARGET_MAIN
-CONTIKI_TARGET_MAIN = contiki-wismote-main.c
+CONTIKI_TARGET_MAIN = contiki-main.c
 endif
 
 ifdef IAR

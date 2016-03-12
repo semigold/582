@@ -16,7 +16,7 @@ shell: example-example-shell.native
 hello-world: example-hello-world.sky example-hello-world.native \
              example-hello-world.minimal-net example-hello-world.msb430 \
              example-hello-world.micaz example-hello-world.avr-raven \
-             example-hello-world.redbee-econotag example-hello-world.z1
+             example-hello-world.redbee-econotag example-hello-world.z1 example-hello-world.fr5969
 rime-examples: example-rime.sky example-rime.z1 example-rime.esb example-rime.redbee-econotag
 ipso-ipv6-raven: example-ipso-ipv6-raven.avr-raven
 jcreate: example-jcreate.jcreate
