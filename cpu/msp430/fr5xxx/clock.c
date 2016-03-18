@@ -65,7 +65,7 @@ ISR(TIMER1_A1, timera1)
 {
   ENERGEST_ON(ENERGEST_TYPE_IRQ);
 
-  /* watchdog_start(); */
+  watchdog_start();
 
   if(TA1IV == 2) {
 
@@ -105,7 +105,7 @@ ISR(TIMER1_A1, timera1)
     LPM4_EXIT;
     }*/
 
-  /* watchdog_stop(); */
+  watchdog_stop();
 
   ENERGEST_OFF(ENERGEST_TYPE_IRQ);
 }
