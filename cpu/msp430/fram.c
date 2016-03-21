@@ -41,5 +41,5 @@ void
 fram_write(unsigned short *storage_addr, unsigned short *words, unsigned int count)
 {
   for ( ; count > 0; count--)
-    *storage_addr++ = *words++
+    *storage_addr++ = *words++;
 }
