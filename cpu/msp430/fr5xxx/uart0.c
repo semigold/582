@@ -75,6 +75,18 @@ uart0_writeb(unsigned char c)
 void
 uart0_init(unsigned long ubr)
 {
+  // Configure GPIO
+
+  /* P2DIR value is controlled by eUSCI_A0 module according to schematics.
+   * Don't worry about it's value. */
+
+  P2SEL1 |= (BIT1 | BIT0);        /* P2.0,1 = USCI_A0 TXD/RXD */
+  P2SEL0 &= ~(BIT1 | BIT0);
+
+  /* Disable the GPIO power-on default high-impedance
+   * mode to activate previously configured port settings */
+  PM5CTL0 &= ~LOCKLPM5;
+
   /* RS232 */
   UCA0CTLW0 = UCSWRST;            /* Hold peripheral in reset state */
   UCA0CTLW0 |= UCSSEL__SMCLK;     /* CLK = SMCLK */
@@ -83,9 +95,6 @@ uart0_init(unsigned long ubr)
   UCA0BR0 = ubr & 0xff;
   UCA0BR1 = (ubr >> 8) & 0xff;
   UCA0MCTLW = UCBRS3;             /* Modulation UCBRSx = 3 */
-  P3DIR &= ~0x20;                 /* P3.5 = USCI_A0 RXD as input */
-  P3DIR |= 0x10;                  /* P3.4 = USCI_A0 TXD as output */
-  P3SEL |= 0x30;                  /* P3.4,5 = USCI_A0 TXD/RXD */
 
   transmitting = 0;
 
@@ -103,7 +112,7 @@ ISR(USCI_A0, uart0_rx_interrupt)
 
   ENERGEST_ON(ENERGEST_TYPE_IRQ);
   if(UCA0IV == 2) {
-    if(UCA0STAT & UCRXERR) {
+    if(UCA0STATW & UCRXERR) {
       c = UCA0RXBUF;   /* Clear error flags by forcing a dummy read. */
     } else {
       c = UCA0RXBUF;

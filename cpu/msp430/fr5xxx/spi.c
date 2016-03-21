@@ -42,6 +42,21 @@ unsigned char spi_busy = 0;
 void
 spi_init(void)
 {
+  // Configure GPIO
+
+  /* XT1 is already setup in init_dco in msp430.c */
+
+  /* P1DIR is controlled by eUSCI_B0 module.
+   * DOn't worry about it */
+
+  P1SEL1 |= BIT6 | BIT7;                 // P1.6,7 UCB0SDA, UCB0SCL
+  P1SEL0 &= ~(BIT6 | BIT7);
+  P2SEL1 |= BIT2;
+  P2SEL0 &= ~(BIT2);                     // P2.2 UCB0CLK (don't know if necessary)
+  // Disable the GPIO power-on default high-impedance mode to activate
+  // previously configured port settings
+  PM5CTL0 &= ~LOCKLPM5;
+
   // Initialize ports for communication with SPI units.
 
   UCB0CTLW0  =  UCSWRST;                 // **Put state machine in reset**
@@ -54,9 +69,6 @@ spi_init(void)
   /* Set up SPI bus speed. */
   UCB0BR0 = 0x02; // /2
   UCB0BR1 = 0x00;
-
-  P3SEL |= BV(SCK) | BV(MOSI) | BV(MISO); // Select Peripheral functionality
-  P3DIR |= BV(SCK) | BV(MISO);  // Configure as outputs(SIMO,CLK).
 
   // Clear pending interrupts before enable!!!
   UCB0IE &= ~UCRXIFG;

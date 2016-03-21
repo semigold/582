@@ -108,22 +108,29 @@ uart1_writeb(unsigned char c)
 void
 uart1_init(unsigned long ubr)
 {
+
+  // Configure GPIO
+
+  /* P2DIR value is controlled by eUSCI_A1 module according to schematics.
+   * don't worry about it's value */
+
+  P2SEL1 |= BIT5 | BIT6;  /* P2.5,6 = USCI_A1 TXD/RXD */
+  P2SEL0 &= ~(BIT5| BIT6);
+
+  // Disable the GPIO power-on default high-impendance mode to activate
+  // previously configured port settings
+
+  PM5CTL0 &= ~LOCKLPM5;
+
   /* RS232 */
   UCA1CTLW0 = UCSWRST;            /* Hold peripheral in reset state */
-  UCA1CTLW0 |= UCSSEL_SMCLK;           /* CLK = SMCLK */
+  UCA1CTLW0 |= UCSSEL__SMCLK;     /* CLK = SMCLK */
 
   ubr = (MSP430_CPU_SPEED / ubr);
   UCA1BR0 = ubr & 0xff;
   UCA1BR1 = (ubr >> 8) & 0xff;
   
   UCA1MCTLW = UCBRS3;             /* Modulation UCBRSx = 3 */
-
-  P4DIR |= BIT5;
-  P4OUT |= BIT5;
-  P5SEL |= BIT6 | BIT7;  /* P5.6,7 = USCI_A1 TXD/RXD */
-
-  P4SEL |= BIT7;
-  P4DIR |= BIT7;
 
   transmitting = 0;
 
