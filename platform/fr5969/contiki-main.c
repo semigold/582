@@ -114,16 +114,12 @@ main(int argc, char **argv)
   /*
    * Initalize hardware.
    */
-   /*
-   * Initalize hardware.
-   */
 
   msp430_cpu_init();
   clock_init();
   leds_init();
 
   leds_on(LEDS_RED);
-
   clock_wait(2);
 
   uart1_init(115200); /* Must come before first printf */
@@ -133,7 +129,6 @@ main(int argc, char **argv)
   leds_on(LEDS_GREEN);
 
 
-  leds_off(LEDS_RED);
   rtimer_init();
   /*
    * Hardware initialization done!

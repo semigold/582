@@ -37,10 +37,10 @@ contiki-$(TARGET).a: ${addprefix $(OBJECTDIR)/,symbols.o}
 	mv $< $@
 
 %.upload: %.hex
-	msp430flasher -n msp430x5969 -e ERASE_MAIN -w $< -v -z [VCC]
+	MSP430Flasher -n msp430fr5969 -e ERASE_MAIN -w $< -v -z [VCC]
 
 %.upload-clean: %.hex
-	msp430flasher -n msp430x5969 -w $< -v -z [VCC]
+	MSP430Flasher -n msp430dfr5969 -w $< -v -z [VCC]
 
 MODULES += core/net core/net/mac \
            core/net/mac/contikimac \
