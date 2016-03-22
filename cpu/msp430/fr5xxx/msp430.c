@@ -120,6 +120,11 @@ init_ports(void)
   P2IE = 0;
   P3IE = 0;
   P4IE = 0;
+
+  // Disable the GPIO power-on default high-impedance mode to activate
+  // previously configured port settings
+
+  PM5CTL0 &= ~LOCKLPM5;
 }
 /*---------------------------------------------------------------------------*/
 /* msp430-ld may align _end incorrectly. Workaround in cpu_init. */

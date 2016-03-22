@@ -66,7 +66,6 @@ ISR(TIMER1_A1, timera1)
   ENERGEST_ON(ENERGEST_TYPE_IRQ);
 
   watchdog_start();
-
   if(TA1IV == 2) {
 
     /* HW timer bug fix: Interrupt handler called before TR==CCR.
@@ -151,22 +150,6 @@ clock_init(void)
   /* Disable interrupts */
   dint();
 
-  /* Select SMCLK (2.4576MHz), clear TAR */
-  /* TACTL = TASSEL__ACLK | TACLR | ID_3; */
-
-  /* Select ACLK 32768Hz clock, divide by 2 */
-/*   TA1CTL = TASSEL__TACLK  | TACLR | ID_1; */
-
-#if INTERVAL==32768/CLOCK_SECOND
-  /* Select TACLK clock, clear TAR */
-  TA1CTL = TASSEL__TACLK  | TACLR;
-#elif INTERVAL==16384/CLOCK_SECOND
-  /* Select TACLK clock, clear TAR, divide by 2 */
-  TA1CTL = TASSEL__TACLK  | TACLR | ID_1;
-#else
-#error NEED TO UPDATE clock.c to match interval!
-#endif
-
   /* Initialize ccr1 to create the X ms interval. */
 
   /* CCR1 interrupt enabled, interrupt occurs when timer equals CCR1. */
@@ -175,8 +158,21 @@ clock_init(void)
   /* Interrupt after X ms. */
   TA1CCR1 = INTERVAL;
 
-  /* Start Timer_A in continuous mode. */
-  TA1CTL |= MC__CONTINUOUS;
+  /* Select SMCLK (2.4576MHz), clear TAR */
+  /* TACTL = TASSEL__ACLK | TACLR | ID_3; */
+
+  /* Select ACLK 32768Hz clock, divide by 2 */
+  /* TA1CTL = TASSEL__TACLK  | TACLR | ID_1; */
+
+#if INTERVAL==32768/CLOCK_SECOND
+  /* Select TACLK clock, clear TAR, continuous mode */
+  TA1CTL = TASSEL__ACLK  | TACLR | MC__CONTINUOUS;
+#elif INTERVAL==16384/CLOCK_SECOND
+  /* Select TACLK clock, clear TAR, continuous mode, divide by 2 */
+  TA1CTL = TASSEL__ACLK  | TACLR | MC__CONTINUOUS |ID_1;
+#else
+#error NEED TO UPDATE clock.c to match interval!
+#endif
 
   count = 0;
 
