@@ -36,12 +36,10 @@
 #include "dev/xmem.h"
 
 #include <stdio.h>
-#include <fcntl.h>
-#include <unistd.h>
 #include <stdio.h>
 #include <string.h>
 
-#define XMEM_SIZE 1024 * 1024
+#define XMEM_SIZE 1024
 
 static unsigned char xmem[XMEM_SIZE];
 /*---------------------------------------------------------------------------*/

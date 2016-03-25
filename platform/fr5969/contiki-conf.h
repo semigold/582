@@ -1,105 +1,155 @@
-/*
- * Copyright (c) 2005, Swedish Institute of Computer Science
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
- * 3. Neither the name of the Institute nor the names of its contributors
- *    may be used to endorse or promote products derived from this software
- *    without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE INSTITUTE AND CONTRIBUTORS ``AS IS'' AND
- * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED.  IN NO EVENT SHALL THE INSTITUTE OR CONTRIBUTORS BE LIABLE
- * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
- * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
- * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
- * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
- * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
- * SUCH DAMAGE.
- *
- * This file is part of the Contiki operating system.
- *
- */
+/* -*- C -*- */
 
-#ifndef CONTIKI_CONF_H_
-#define CONTIKI_CONF_H_
+#ifndef CONTIKI_CONF_H
+#define CONTIKI_CONF_H
 
-#include <inttypes.h>
+#include "platform-conf.h"
 
-struct select_callback {
-  int  (* set_fd)(fd_set *fdr, fd_set *fdw);
-  void (* handle_fd)(fd_set *fdr, fd_set *fdw);
-};
-int select_set_callback(int fd, const struct select_callback *callback);
+#ifndef NETSTACK_CONF_MAC
+#define NETSTACK_CONF_MAC     csma_driver
+#endif /* NETSTACK_CONF_MAC */
 
-#define CC_CONF_REGISTER_ARGS          1
-#define CC_CONF_FUNCTION_POINTER_ARGS  1
-#define CC_CONF_VA_ARGS                1
-/*#define CC_CONF_INLINE                 inline*/
-
-#ifndef EEPROM_CONF_SIZE
-#define EEPROM_CONF_SIZE				1024
-#endif
-
-#define CCIF
-#define CLIF
-
-/* These names are deprecated, use C99 names. */
-typedef uint8_t   u8_t;
-typedef uint16_t u16_t;
-typedef uint32_t u32_t;
-typedef  int32_t s32_t;
-
-typedef unsigned short uip_stats_t;
-
-#define UIP_CONF_UDP             1
-#define UIP_CONF_MAX_CONNECTIONS 40
-#define UIP_CONF_MAX_LISTENPORTS 40
-#define UIP_CONF_BUFFER_SIZE     420
-#define UIP_CONF_BYTE_ORDER      UIP_LITTLE_ENDIAN
-#define UIP_CONF_TCP       1
-#define UIP_CONF_TCP_SPLIT       0
-#define UIP_CONF_LOGGING         0
-#define UIP_CONF_UDP_CHECKSUMS   1
+#ifndef NETSTACK_CONF_RDC
+#define NETSTACK_CONF_RDC     contikimac_driver
+#endif /* NETSTACK_CONF_RDC */
 
 #ifndef NETSTACK_CONF_RDC_CHANNEL_CHECK_RATE
 #define NETSTACK_CONF_RDC_CHANNEL_CHECK_RATE 8
 #endif /* NETSTACK_CONF_RDC_CHANNEL_CHECK_RATE */
 
-#if NETSTACK_CONF_WITH_IPV6
-
-#define LINKADDR_CONF_SIZE              8
-
-#ifndef NETSTACK_CONF_MAC
-#define NETSTACK_CONF_MAC     nullmac_driver
-#endif /* NETSTACK_CONF_MAC */
-
-#ifndef NETSTACK_CONF_RDC
-#define NETSTACK_CONF_RDC     nullrdc_driver
-#endif /* NETSTACK_CONF_RDC */
-
 #ifndef NETSTACK_CONF_RADIO
-#define NETSTACK_CONF_RADIO   nullradio_driver
+#define NETSTACK_CONF_RADIO   cc2520_driver
 #endif /* NETSTACK_CONF_RADIO */
 
 #ifndef NETSTACK_CONF_FRAMER
 #define NETSTACK_CONF_FRAMER  framer_802154
 #endif /* NETSTACK_CONF_FRAMER */
 
+#ifndef CC2520_CONF_AUTOACK
+#define CC2520_CONF_AUTOACK              1
+#endif /* CC2520_CONF_AUTOACK */
+
+#define NULLRDC_CONF_802154_AUTOACK      1
+
+#if NETSTACK_CONF_WITH_IPV6
+/* Network setup for IPv6 */
 #define NETSTACK_CONF_NETWORK sicslowpan_driver
 
-#define NETSTACK_CONF_LINUXRADIO_DEV "wpan0"
+/* Specify a minimum packet size for 6lowpan compression to be
+   enabled. This is needed for ContikiMAC, which needs packets to be
+   larger than a specified size, if no ContikiMAC header should be
+   used. */
+#define SICSLOWPAN_CONF_COMPRESSION_THRESHOLD 63
+
+#define CXMAC_CONF_ANNOUNCEMENTS         0
+#define XMAC_CONF_ANNOUNCEMENTS          0
+
+#ifndef QUEUEBUF_CONF_NUM
+#define QUEUEBUF_CONF_NUM                8
+#endif
+
+#else /* NETSTACK_CONF_WITH_IPV6 */
+
+/* Network setup for non-IPv6 (rime). */
+
+#define NETSTACK_CONF_NETWORK rime_driver
+
+#define COLLECT_CONF_ANNOUNCEMENTS       1
+#define CXMAC_CONF_ANNOUNCEMENTS         0
+#define XMAC_CONF_ANNOUNCEMENTS          0
+#define CONTIKIMAC_CONF_ANNOUNCEMENTS    0
+
+#define CONTIKIMAC_CONF_COMPOWER         1
+#define XMAC_CONF_COMPOWER               1
+#define CXMAC_CONF_COMPOWER              1
+
+#ifndef COLLECT_NEIGHBOR_CONF_MAX_COLLECT_NEIGHBORS
+#define COLLECT_NEIGHBOR_CONF_MAX_COLLECT_NEIGHBORS     32
+#endif /* COLLECT_NEIGHBOR_CONF_MAX_COLLECT_NEIGHBORS */
+
+#ifndef QUEUEBUF_CONF_NUM
+#define QUEUEBUF_CONF_NUM                16
+#endif /* QUEUEBUF_CONF_NUM */
+
+#ifndef TIMESYNCH_CONF_ENABLED
+#define TIMESYNCH_CONF_ENABLED           0
+#endif /* TIMESYNCH_CONF_ENABLED */
+
+#if TIMESYNCH_CONF_ENABLED
+/* CC2520 SDF timestamps must be on if timesynch is enabled. */
+#undef CC2520_CONF_SFD_TIMESTAMPS
+#define CC2520_CONF_SFD_TIMESTAMPS       1
+#endif /* TIMESYNCH_CONF_ENABLED */
+
+#endif /* NETSTACK_CONF_WITH_IPV6 */
+
+#define PACKETBUF_CONF_ATTRS_INLINE 1
+
+#ifndef RF_CHANNEL
+#define RF_CHANNEL              26
+#endif /* RF_CHANNEL */
+
+#define CONTIKIMAC_CONF_BROADCAST_RATE_LIMIT 0
+
+#define IEEE802154_CONF_PANID       0xABCD
+
+#define SHELL_VARS_CONF_RAM_BEGIN 0x1100
+#define SHELL_VARS_CONF_RAM_END 0x2000
+
+#define PROFILE_CONF_ON 0
+#define ENERGEST_CONF_ON 1
+
+#define ELFLOADER_CONF_TEXT_IN_ROM 0
+#ifndef ELFLOADER_CONF_DATAMEMORY_SIZE
+#define ELFLOADER_CONF_DATAMEMORY_SIZE 0x400
+#endif /* ELFLOADER_CONF_DATAMEMORY_SIZE */
+#ifndef ELFLOADER_CONF_TEXTMEMORY_SIZE
+#define ELFLOADER_CONF_TEXTMEMORY_SIZE 0x800
+#endif /* ELFLOADER_CONF_TEXTMEMORY_SIZE */
+
+#define AODV_COMPLIANCE
+#define AODV_NUM_RT_ENTRIES 32
+
+#define WITH_ASCII 1
+
+#define PROCESS_CONF_NUMEVENTS 8
+#define PROCESS_CONF_STATS 1
+/*#define PROCESS_CONF_FASTPOLL    4*/
+
+#define UART1_CONF_RX_WITH_DMA 0
+
+#ifdef NETSTACK_CONF_WITH_IPV6
+
+#define LINKADDR_CONF_SIZE              8
+
+#define UIP_CONF_LL_802154              1
+#define UIP_CONF_LLH_LEN                0
 
 #define UIP_CONF_ROUTER                 1
+
+/* configure number of neighbors and routes */
+#ifndef NBR_TABLE_CONF_MAX_NEIGHBORS
+#define NBR_TABLE_CONF_MAX_NEIGHBORS     30
+#endif /* NBR_TABLE_CONF_MAX_NEIGHBORS */
+#ifndef UIP_CONF_MAX_ROUTES
+#define UIP_CONF_MAX_ROUTES   30
+#endif /* UIP_CONF_MAX_ROUTES */
+
+#define UIP_CONF_ND6_SEND_RA    0
+#define UIP_CONF_ND6_REACHABLE_TIME     600000
+#define UIP_CONF_ND6_RETRANS_TIMER      10000
+
+#define NETSTACK_CONF_WITH_IPV6                   1
+#ifndef UIP_CONF_IPV6_QUEUE_PKT
+#define UIP_CONF_IPV6_QUEUE_PKT         0
+#endif /* UIP_CONF_IPV6_QUEUE_PKT */
+#define UIP_CONF_IPV6_CHECKS            1
+#define UIP_CONF_IPV6_REASSEMBLY        0
+#define UIP_CONF_NETIF_MAX_ADDRESSES    3
+#define UIP_CONF_IP_FORWARD             0
+#ifndef UIP_CONF_BUFFER_SIZE
+#define UIP_CONF_BUFFER_SIZE    240
+#endif
 
 #define SICSLOWPAN_CONF_COMPRESSION             SICSLOWPAN_COMPRESSION_HC06
 #ifndef SICSLOWPAN_CONF_FRAG
@@ -110,39 +160,23 @@ typedef unsigned short uip_stats_t;
 #ifndef SICSLOWPAN_CONF_MAX_MAC_TRANSMISSIONS
 #define SICSLOWPAN_CONF_MAX_MAC_TRANSMISSIONS   5
 #endif /* SICSLOWPAN_CONF_MAX_MAC_TRANSMISSIONS */
-
-#define UIP_CONF_IPV6_CHECKS     1
-#define UIP_CONF_IPV6_QUEUE_PKT  1
-#define UIP_CONF_IPV6_REASSEMBLY 0
-#define UIP_CONF_NETIF_MAX_ADDRESSES  3
-#define UIP_CONF_ICMP6           1
-
-/* configure number of neighbors and routes */
-#ifndef NBR_TABLE_CONF_MAX_NEIGHBORS
-#define NBR_TABLE_CONF_MAX_NEIGHBORS     30
-#endif /* NBR_TABLE_CONF_MAX_NEIGHBORS */
-#ifndef UIP_CONF_MAX_ROUTES
-#define UIP_CONF_MAX_ROUTES   30
-#endif /* UIP_CONF_MAX_ROUTES */
-
-#define UIP_CONF_ND6_SEND_RA		0
-#define UIP_CONF_ND6_REACHABLE_TIME     600000
-#define UIP_CONF_ND6_RETRANS_TIMER      10000
-
-#define UIP_CONF_IP_FORWARD             0
-#ifndef UIP_CONF_BUFFER_SIZE
-#define UIP_CONF_BUFFER_SIZE		240
-#endif
-
-
-#define UIP_CONF_LLH_LEN                0
-#define UIP_CONF_LL_802154              1
+#else /* NETSTACK_CONF_WITH_IPV6 */
+#define UIP_CONF_IP_FORWARD      1
+#define UIP_CONF_BUFFER_SIZE     108
+#endif /* NETSTACK_CONF_WITH_IPV6 */
 
 #define UIP_CONF_ICMP_DEST_UNREACH 1
 
 #define UIP_CONF_DHCP_LIGHT
+#define UIP_CONF_LLH_LEN         0
+#ifndef  UIP_CONF_RECEIVE_WINDOW
 #define UIP_CONF_RECEIVE_WINDOW  48
+#endif
+#ifndef  UIP_CONF_TCP_MSS
 #define UIP_CONF_TCP_MSS         48
+#endif
+#define UIP_CONF_MAX_CONNECTIONS 4
+#define UIP_CONF_MAX_LISTENPORTS 8
 #define UIP_CONF_UDP_CONNS       12
 #define UIP_CONF_FWCACHE_SIZE    30
 #define UIP_CONF_BROADCAST       1
@@ -152,117 +186,7 @@ typedef unsigned short uip_stats_t;
 #define UIP_CONF_PINGADDRCONF    0
 #define UIP_CONF_LOGGING         0
 
-
-
-#endif /* NETSTACK_CONF_WITH_IPV6 */
-
-#include <ctype.h>
-#define ctk_arch_isprint isprint
-
-#include "ctk/ctk-curses.h"
-
-#define CH_ULCORNER	          -10
-#define CH_URCORNER	          -11
-#define CH_LLCORNER	          -12
-#define CH_LRCORNER	          -13
-#define CH_ENTER	          '\n'
-#define CH_DEL		          '\b'
-#define CH_CURS_UP  	          -1
-#define CH_CURS_LEFT	          -2
-#define CH_CURS_RIGHT	          -3
-#define CH_CURS_DOWN	          -4
-
-#define CTK_CONF_MENU_KEY         -5  /* F10 */
-#define CTK_CONF_WINDOWSWITCH_KEY -6  /* Ctrl-Tab */
-#define CTK_CONF_WIDGETUP_KEY     -7  /* Shift-Tab */
-#define CTK_CONF_WIDGETDOWN_KEY   '\t'
-#define CTK_CONF_WIDGET_FLAGS     0
-#define CTK_CONF_SCREENSAVER      1
-
-#ifdef PLATFORM_BUILD
-#define CTK_CONF_MOUSE_SUPPORT    1
-#define CTK_CONF_WINDOWS          1
-#define CTK_CONF_WINDOWMOVE       1
-#define CTK_CONF_WINDOWCLOSE      1
-#define CTK_CONF_ICONS            1
-#define CTK_CONF_ICON_BITMAPS     0
-#define CTK_CONF_ICON_TEXTMAPS    1
-#define CTK_CONF_MENUS            1
-#define CTK_CONF_MENUWIDTH        16
-#define CTK_CONF_MAXMENUITEMS     10
-#else /* PLATFORM_BUILD */
-#define CTK_CONF_MOUSE_SUPPORT    1
-#define CTK_CONF_WINDOWS          0
-#define CTK_CONF_WINDOWMOVE       0
-#define CTK_CONF_WINDOWCLOSE      0
-#define CTK_CONF_ICONS            0
-#define CTK_CONF_MENUS            0
-#endif /* PLATFORM_BUILD */
-
-/* CTK-specific color constants */
-#define CTK_COLOR_BLACK   0
-#define CTK_COLOR_RED     1
-#define CTK_COLOR_GREEN   2
-#define CTK_COLOR_YELLOW  3
-#define CTK_COLOR_BLUE    4
-#define CTK_COLOR_MAGENTA 5
-#define CTK_COLOR_CYAN    6
-#define CTK_COLOR_WHITE   7
-
-/* base background color for widgets */
-#define COLOR_BG CTK_COLOR_BLUE
-
-#define BORDERCOLOR         CTK_COLOR_BLACK
-#define SCREENCOLOR         CTK_COLOR_BLACK
-#define BACKGROUNDCOLOR     CTK_COLOR_BLACK
-#define WINDOWCOLOR_FOCUS   CTK_COLOR_WHITE  | COLOR_BG * 0x10
-#define WINDOWCOLOR         CTK_COLOR_CYAN   | COLOR_BG * 0x10
-#define DIALOGCOLOR         CTK_COLOR_WHITE  | COLOR_BG * 0x10
-#define WIDGETCOLOR_HLINK   CTK_COLOR_CYAN   | COLOR_BG * 0x10
-#define WIDGETCOLOR_FWIN    CTK_COLOR_WHITE  | COLOR_BG * 0x10
-#define WIDGETCOLOR         CTK_COLOR_CYAN   | COLOR_BG * 0x10
-#define WIDGETCOLOR_DIALOG  CTK_COLOR_WHITE  | COLOR_BG * 0x10
-#define WIDGETCOLOR_FOCUS   CTK_COLOR_YELLOW | COLOR_BG * 0x10
-#define MENUCOLOR           CTK_COLOR_WHITE  | COLOR_BG * 0x10
-#define OPENMENUCOLOR       CTK_COLOR_WHITE  | COLOR_BG * 0x10
-#define ACTIVEMENUITEMCOLOR CTK_COLOR_YELLOW | COLOR_BG * 0x10
-
-
-typedef unsigned long clock_time_t;
-
-#define CLOCK_CONF_SECOND 1000
-
-#define LOG_CONF_ENABLED 1
-
-#define PROGRAM_HANDLER_CONF_MAX_NUMDSCS 10
-#define PROGRAM_HANDLER_CONF_QUIT_MENU   1
-
-#define EMAIL_CONF_WIDTH  78
-#define EMAIL_CONF_HEIGHT 17
-#ifndef PLATFORM_BUILD
-#define EMAIL_CONF_ERASE   0
-#endif
-
-#define IRC_CONF_WIDTH         78
-#define IRC_CONF_HEIGHT        17
-#define IRC_CONF_SYSTEM_STRING "*nix"
-
-#define SHELL_CONF_WITH_PROGRAM_HANDLER 1
-
-#define SHELL_GUI_CONF_XSIZE 78
-#define SHELL_GUI_CONF_YSIZE 17
-
-#ifdef PLATFORM_BUILD
-#define TELNETD_CONF_GUI 1
-#endif /* PLATFORM_BUILD */
-
-#ifdef PLATFORM_BUILD
-#define WWW_CONF_WEBPAGE_WIDTH  78
-#define WWW_CONF_WEBPAGE_HEIGHT 17
-#endif /* PLATFORM_BUILD */
-
-/* Not part of C99 but actually present */
-int strcasecmp(const char*, const char*);
+#define UIP_CONF_TCP_SPLIT       0
 
 /* include the project config */
 /* PROJECT_CONF_H might be defined in the project Makefile */
@@ -270,4 +194,4 @@ int strcasecmp(const char*, const char*);
 #include PROJECT_CONF_H
 #endif /* PROJECT_CONF_H */
 
-#endif /* CONTIKI_CONF_H_ */
+#endif /* CONTIKI_CONF_H */
