@@ -53,6 +53,6 @@
  * \param count The number of 16-bit words to be written
  */
 
-void fram_write(unsigned short *storage_addr, unsigned short *words, unsigned int count)
+void fram_write(unsigned short *storage_addr, unsigned short *words, unsigned int count);
 
 #endif /* FRAM_H_ */
