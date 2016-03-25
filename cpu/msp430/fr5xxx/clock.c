@@ -71,7 +71,7 @@ ISR(TIMER1_A1, timera1)
 
     /* HW timer bug fix: Interrupt handler called before TR==CCR.
      * Occurs when timer state is toggled between STOP and CONT. */
-    while(TA1CTL & MC1 && TA1CCR1 - TA1R == 1);
+    while(TA1CTL & MC__CONTINUOUS && TA1CCR1 - TA1R == 1);
 
     last_tar = read_tar();
     /* Make sure interrupt time is future */
@@ -152,20 +152,23 @@ clock_init(void)
   dint();
 
   /* Select SMCLK (2.4576MHz), clear TAR */
-  /* TACTL = TASSEL1 | TACLR | ID_3; */
+  /* TACTL = TASSEL__ACLK | TACLR | ID_3; */
 
   /* Select ACLK 32768Hz clock, divide by 2 */
-/*   TA1CTL = TASSEL0 | TACLR | ID_1; */
+/*   TA1CTL = TASSEL__TACLK  | TACLR | ID_1; */
 
 #if INTERVAL==32768/CLOCK_SECOND
-  TA1CTL = TASSEL0 | TACLR;
+  /* Select TACLK clock, clear TAR */
+  TA1CTL = TASSEL__TACLK  | TACLR;
 #elif INTERVAL==16384/CLOCK_SECOND
-  TA1CTL = TASSEL0 | TACLR | ID_1;
+  /* Select TACLK clock, clear TAR, divide by 2 */
+  TA1CTL = TASSEL__TACLK  | TACLR | ID_1;
 #else
 #error NEED TO UPDATE clock.c to match interval!
 #endif
 
   /* Initialize ccr1 to create the X ms interval. */
+
   /* CCR1 interrupt enabled, interrupt occurs when timer equals CCR1. */
   TA1CCTL1 = CCIE;
 
@@ -173,7 +176,7 @@ clock_init(void)
   TA1CCR1 = INTERVAL;
 
   /* Start Timer_A in continuous mode. */
-  TA1CTL |= MC1;
+  TA1CTL |= MC__CONTINUOUS;
 
   count = 0;
 
