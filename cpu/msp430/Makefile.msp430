@@ -41,11 +41,17 @@ endif
 
 CONTIKI_CPU_DIRS = $(CONTIKI_CPU_FAM_DIR) . dev
 
-MSP430     = msp430.c flash.c clock.c leds.c leds-arch.c \
+MSP430     = msp430.c clock.c leds.c leds-arch.c \
              watchdog.c lpm.c rtimer-arch.c
 #UIPDRIVERS = me.c me_tabs.c slip.c crc16.c
 UIPDRIVERS = 
 ELFLOADER  = elfloader.c elfloader-msp430.c symtab.c
+
+ifneq (,$(findstring msp430fr5,$(MCU)))
+  MSP430 += fram.c
+else 
+  MSP430 += flash.c
+endif
 
 ifndef CPU_HAS_MSP430X
 # include mtarch.c only in the non-large memory model case, because

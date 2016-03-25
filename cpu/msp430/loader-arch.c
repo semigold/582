@@ -38,6 +38,7 @@
 #include "dev/leds.h"
 #include "dev/eeprom.h"
 #include "dev/flash.h"
+#include "dev/fram.h"
 
 #include "loader/loader-arch.h"
 
@@ -45,6 +46,7 @@ void *loader_arch_codeaddr, *loader_arch_dataaddr;
 
 
 #define FLASHADDR ((char *)0x8000)
+#define FRAMADDR ((char *)0x8000)
 #define DATAADDR ((char *)0x900)
 #define READSIZE 0x10
 
@@ -59,7 +61,11 @@ loader_arch_load(unsigned short startaddr)
   unsigned short codelen, datalen, sumlen;
   int i, j;
   unsigned short ptr;
+  #if CONTIKI_TARGET_FR5969
+  unsigned short *framptr;
+  #else
   unsigned short *flashptr;
+  #endif
   void (* init)(void *);
   unsigned char tmpdata[READSIZE];
   unsigned char sum;
@@ -108,7 +114,7 @@ loader_arch_load(unsigned short startaddr)
   }
 
   /* If the checksum was wrong, we beep. The number of beeps indicate
-     the numerival value of the calculated checksum. */
+     the numerical value of the calculated checksum. */
   if(sum != 0xff) {
     leds_on(LEDS_RED);
     
@@ -154,7 +160,22 @@ loader_arch_load(unsigned short startaddr)
   /* Convert from network byte order to host byte order. */
   codelen = uip_htons(codelen);
   
+  #if CONTIKI_TARGET_FR5969
+  /* Write program code into FRAM. We use the available space in the
+     program's data memory to temporarily store the code before
+     writing it into FRAM. */
 
+  framptr = (unsigned short *)FRAMADDR;
+  for(ptr = startaddr + 2; ptr < startaddr + 2 + codelen; ptr += READSIZE) {
+    
+    /* Read data from EEPROM into RAM. */
+    eeprom_read(ptr, DATAADDR, READSIZE);
+    
+    /* Burn data from RAM into FRAM. */
+    fram_write(framptr, DATAADDR, READSIZE/2);
+  }
+
+  #else
   /* Flash program code into ROM. We use the available space in the
      program's data memory to temporarily store the code before
      flashing it into ROM. */
@@ -183,6 +204,7 @@ loader_arch_load(unsigned short startaddr)
   }
 
   flash_done();
+  #endif
 
   leds_off(LEDS_YELLOW);
 
@@ -207,7 +229,11 @@ loader_arch_load(unsigned short startaddr)
   leds_off(LEDS_GREEN);
   
   /* Execute the loaded program. */
+  #if CONTIKI_TARGET_FR5969
+  init = ((void (*)(void *))FRAMADDR);
+  #else
   init = ((void (*)(void *))FLASHADDR);
+  #endif
   init((void *)0);
 }
 /*----------------------------------------------------------------------------------*/

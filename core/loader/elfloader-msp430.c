@@ -32,6 +32,7 @@
 #include "elfloader-arch.h"
 
 #include "dev/flash.h"
+#include "dev/fram.h"
 
 static uint16_t datamemory_aligned[ELFLOADER_DATAMEMORY_SIZE/2+1];
 static uint8_t* datamemory = (uint8_t *)datamemory_aligned;
@@ -67,6 +68,22 @@ elfloader_arch_write_rom(int fd, unsigned short textoff, unsigned int size, char
 #if ELFLOADER_CONF_TEXT_IN_ROM
   int i;
   unsigned int ptr;
+  #if CONTIKI_TARGET_FR5969
+  unsigned short *framptr;
+
+  framptr = (unsigned short *)mem;
+
+  cfs_seek(fd, textoff, CFS_SEEK_SET);
+  for(ptr = 0; ptr < size; ptr += READSIZE) {
+
+    /* Read data from file into RAM. */
+    cfs_read(fd, (unsigned char *)datamemory, READSIZE);
+
+    /* Burn data from RAM into FRAM. */
+    fram_write(framptr, (unsigned short *)datamemory, READSIZE/2);
+  }
+
+  #else
   unsigned short *flashptr;
 
   flash_setup();
@@ -96,6 +113,7 @@ elfloader_arch_write_rom(int fd, unsigned short textoff, unsigned int size, char
   }
 
   flash_done();
+  #endif
 #else /* ELFLOADER_CONF_TEXT_IN_ROM */
   cfs_seek(fd, textoff, CFS_SEEK_SET);
   cfs_read(fd, (unsigned char *)mem, size);
