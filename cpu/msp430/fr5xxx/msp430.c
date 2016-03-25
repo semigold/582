@@ -48,11 +48,13 @@ msp430_init_dco(void)
   asmv("bis %0, r2" : : "i" (SCG0));
 #endif
 
-  UCSCTL0 = 0x0000;
-  UCSCTL1 = DCORSEL_4;
-
-  UCSCTL2 = MSP430_CPU_SPEED / 32768;
-  UCSCTL4 = 0x33; /* instead of 0x44 that is DCO/2 */
+// Clock System Setup
+CSCTL0_H = CSKEY >> 8;                    // Unlock CS registers
+CSCTL1 = DCOFSEL_6;                       // Set DCO to 8MHz
+CSCTL2 = SELA__VLOCLK | SELS__DCOCLK | SELM__DCOCLK;  // Set SMCLK = MCLK = DCO
+                                          // ACLK = VLOCLK
+CSCTL3 = DIVA__1 | DIVS__1 | DIVM__1;     // Set all dividers to 1
+CSCTL0_H = 0;                             // Lock CS registers
 
 #ifdef __IAR_SYSTEMS_ICC__
   __bic_SR_register(SCG0);
