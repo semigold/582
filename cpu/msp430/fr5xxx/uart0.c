@@ -48,7 +48,7 @@ static volatile uint8_t transmitting;
 uint8_t
 uart0_active(void)
 {
-  return (UCA0STAT & UCBUSY) | transmitting;
+  return (UCA0STATW & UCBUSY) | transmitting;
 }
 /*---------------------------------------------------------------------------*/
 void

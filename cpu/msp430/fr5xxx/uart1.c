@@ -78,7 +78,7 @@ handle_rxdma_timer(void *ptr)
 uint8_t
 uart1_active(void)
 {
-  return (UCA1STAT & UCBUSY) | transmitting;
+  return (UCA1STATW & UCBUSY) | transmitting;
 }
 /*---------------------------------------------------------------------------*/
 void
@@ -157,7 +157,7 @@ ISR(USCI_A1, uart1_rx_interrupt)
 
   ENERGEST_ON(ENERGEST_TYPE_IRQ);
   if(UCA1IV == 2) {
-    if(UCA1STAT & UCRXERR) {
+    if(UCA1STATW & UCRXERR) {
       c = UCA1RXBUF;   /* Clear error flags by forcing a dummy read. */
     } else {
       c = UCA1RXBUF;
