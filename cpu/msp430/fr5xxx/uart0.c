@@ -62,7 +62,7 @@ uart0_writeb(unsigned char c)
 {
   watchdog_periodic();
   /* Loop until the transmission buffer is available. */
-  while((UCA0STAT & UCBUSY));
+  while(!(UCA0IFG & UCTXIFG));
 
   /* Transmit the data. */
   UCA0TXBUF = c;
@@ -76,18 +76,16 @@ void
 uart0_init(unsigned long ubr)
 {
   /* RS232 */
-  UCA0CTL1 |= UCSWRST;            /* Hold peripheral in reset state */
-  UCA0CTL1 |= UCSSEL_2;           /* CLK = SMCLK */
+  UCA0CTLW0 = UCSWRST;            /* Hold peripheral in reset state */
+  UCA0CTLW0 |= UCSSEL__SMCLK;     /* CLK = SMCLK */
 
   ubr = (MSP430_CPU_SPEED / ubr);
   UCA0BR0 = ubr & 0xff;
   UCA0BR1 = (ubr >> 8) & 0xff;
-  UCA0MCTL = UCBRS_3;             /* Modulation UCBRSx = 3 */
+  UCA0MCTLW = UCBRS3;             /* Modulation UCBRSx = 3 */
   P3DIR &= ~0x20;                 /* P3.5 = USCI_A0 RXD as input */
   P3DIR |= 0x10;                  /* P3.4 = USCI_A0 TXD as output */
   P3SEL |= 0x30;                  /* P3.4,5 = USCI_A0 TXD/RXD */
-
-  /*UCA0CTL1 &= ~UCSWRST;*/       /* Initialize USCI state machine */
 
   transmitting = 0;
 
@@ -95,7 +93,7 @@ uart0_init(unsigned long ubr)
   UCA0IE &= ~UCRXIFG;
   UCA0IE &= ~UCTXIFG;
 
-  UCA0CTL1 &= ~UCSWRST;                   /* Initialize USCI state machine **before** enabling interrupts */
+  UCA0CTLW0 &= ~UCSWRST;                    /* Initialize USCI state machine **before** enabling interrupts */
   UCA0IE |= UCRXIE;                        /* Enable UCA0 RX interrupt */
 }
 /*---------------------------------------------------------------------------*/

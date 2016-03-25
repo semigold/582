@@ -44,26 +44,26 @@ spi_init(void)
 {
   // Initialize ports for communication with SPI units.
 
-  UCB0CTL1 |=  UCSWRST;                //reset usci
-  UCB0CTL1 |=  UCSSEL_2;               //smclk while usci is reset
-  UCB0CTL0 = ( UCMSB | UCMST | UCSYNC | UCCKPL); // MSB-first 8-bit, Master, Synchronous, 3 pin SPI master, no ste, watch-out for clock-phase UCCKPH
+  UCB0CTLW0  =  UCSWRST;                 // **Put state machine in reset**
+  UCB0CTLW0 |=  UCSSEL__SMCLK;           // smclk while usci is reset
 
+  /* // MSB-first 8-bit, Master, Synchronous, 3 pin SPI master, no ste,
+   watch-out for clock-phase UCCKPH */
+  UCB0CTLW0 |= ( UCMSB | UCMST | UCSYNC | UCCKPL); 
+
+  /* Set up SPI bus speed. */
+  UCB0BR0 = 0x02; // /2
   UCB0BR1 = 0x00;
-  UCB0BR0 = 0x02;
-
-//  UCB0MCTL = 0;                       // Dont need modulation control.
 
   P3SEL |= BV(SCK) | BV(MOSI) | BV(MISO); // Select Peripheral functionality
   P3DIR |= BV(SCK) | BV(MISO);  // Configure as outputs(SIMO,CLK).
 
-  //ME1   |= USPIE0;            // Module enable ME1 --> U0ME? xxx/bg
-
   // Clear pending interrupts before enable!!!
   UCB0IE &= ~UCRXIFG;
   UCB0IE &= ~UCTXIFG;
-  UCB0CTL1 &= ~UCSWRST;         // Remove RESET before enabling interrupts
+  UCB0CTLW0 &= ~UCSWRST;         // **Initialize USCI state machine**
 
   //Enable UCB0 Interrupts
-  //IE2 |= UCB0TXIE;              // Enable USCI_B0 TX Interrupts
-  //IE2 |= UCB0RXIE;              // Enable USCI_B0 RX Interrupts
+  //UCB0IE |= UCB0TXIE;              // Enable USCI_B0 TX Interrupts
+  //UCB0IE |= UCB0RXIE;              // Enable USCI_B0 RX Interrupts
 }

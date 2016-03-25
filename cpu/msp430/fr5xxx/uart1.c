@@ -28,7 +28,7 @@
  */
 
 /*
- * Yet another machine dependent MSP430X UART0 code.
+ * Yet another machine dependent MSP430X UART1 code.
  * IF2, etc. can not be used here... need to abstract to some macros
  * later.
  */
@@ -95,7 +95,7 @@ uart1_writeb(unsigned char c)
 {
   watchdog_periodic();
   /* Loop until the transmission buffer is available. */
-  while((UCA1STAT & UCBUSY));
+  while(!(UCA1IFG & UCTXIFG));
 
   /* Transmit the data. */
   UCA1TXBUF = c;
@@ -109,14 +109,14 @@ void
 uart1_init(unsigned long ubr)
 {
   /* RS232 */
-  UCA1CTL1 |= UCSWRST;            /* Hold peripheral in reset state */
-  UCA1CTL1 |= UCSSEL_2;           /* CLK = SMCLK */
+  UCA1CTLW0 = UCSWRST;            /* Hold peripheral in reset state */
+  UCA1CTLW0 |= UCSSEL_SMCLK;           /* CLK = SMCLK */
 
   ubr = (MSP430_CPU_SPEED / ubr);
   UCA1BR0 = ubr & 0xff;
   UCA1BR1 = (ubr >> 8) & 0xff;
-  /* UCA1MCTL |= UCBRS_2 + UCBRF_0;            // Modulation UCBRFx=0 */
-  UCA1MCTL = UCBRS_3;             /* Modulation UCBRSx = 3 */
+  
+  UCA1MCTLW = UCBRS3;             /* Modulation UCBRSx = 3 */
 
   P4DIR |= BIT5;
   P4OUT |= BIT5;
@@ -125,15 +125,13 @@ uart1_init(unsigned long ubr)
   P4SEL |= BIT7;
   P4DIR |= BIT7;
 
-  /*UCA1CTL1 &= ~UCSWRST;*/       /* Initialize USCI state machine */
-
   transmitting = 0;
 
   /* XXX Clear pending interrupts before enable */
   UCA1IE &= ~UCRXIFG;
   UCA1IE &= ~UCTXIFG;
 
-  UCA1CTL1 &= ~UCSWRST;                   /* Initialize USCI state machine **before** enabling interrupts */
+  UCA1CTLW0 &= ~UCSWRST;                   /* Initialize USCI state machine **before** enabling interrupts */
   UCA1IE |= UCRXIE;                        /* Enable UCA1 RX interrupt */
 
 #if RX_WITH_DMA
