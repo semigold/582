@@ -2,7 +2,7 @@ CONTIKI_TARGET_SOURCEFILES = contiki-main.c
 
 ARCH=leds.c leds-arch.c \
     button-sensor.c xmem.c \
-    sensors.c irq.c
+    sensors.c irq.c slip_uart1.c uart1-putchar.c
 
 
 CONTIKI_TARGET_DIRS = . dev apps net
@@ -37,10 +37,10 @@ contiki-$(TARGET).a: ${addprefix $(OBJECTDIR)/,symbols.o}
 	mv $< $@
 
 %.upload: %.hex
-	MSP430Flasher -n msp430fr5969 -e ERASE_MAIN -w $< -v -z [VCC]
+	MSP430Flasher -n $(MCU) -e ERASE_MAIN -w $< -v -z [VCC]
 
 %.upload-clean: %.hex
-	MSP430Flasher -n msp430dfr5969 -w $< -v -z [VCC]
+	MSP430Flasher -n $(MCU) -w $< -v -z [VCC]
 
 MODULES += core/net core/net/mac \
            core/net/mac/contikimac \
