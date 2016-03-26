@@ -108,6 +108,13 @@ void uip_log(char *msg) { puts(msg); }
 #if NETSTACK_CONF_WITH_IPV4
 #endif /* NETSTACK_CONF_WITH_IPV4 */
 /*---------------------------------------------------------------------------*/
+
+int
+putchar(int c) {
+    uart1_writeb(c);
+    return c;
+}
+
 int
 main(int argc, char **argv)
 {
@@ -123,17 +130,80 @@ main(int argc, char **argv)
   clock_wait(2);
 
   uart1_init(115200); /* Must come before first printf */
-  
+
   clock_wait(1);
 
-  leds_on(LEDS_GREEN);
-
-
   rtimer_init();
+
   /*
    * Hardware initialization done!
    */
- return 0;
+
+  process_init();
+  process_start(&etimer_process, NULL);
+
+  ctimer_init();
+
+  uart1_set_input(serial_line_input_byte);
+  serial_line_init();
+
+  printf("Hello World\n");
+
+  energest_init();
+  ENERGEST_ON(ENERGEST_TYPE_CPU);
+
+ // print_processes(autostart_processes);
+ // autostart_start(autostart_processes);
+
+  leds_on(LEDS_GREEN);
+
+  /*
+   * This is the scheduler loop.
+   */
+  watchdog_start();
+  watchdog_stop(); /* Stop the wdt... */
+  while(1) {
+    int r;
+    do {
+      /* Reset watchdog. */
+      watchdog_periodic();
+      r = process_run();
+    } while(r > 0);
+
+    /*
+     * Idle processing.
+     */
+    int s = splhigh();          /* Disable interrupts. */
+    /* uart1_active is for avoiding LPM3 when still sending or receiving */
+    if(process_nevents() != 0 || uart1_active()) {
+      splx(s);                  /* Re-enable interrupts. */
+    } else {
+      static unsigned long irq_energest = 0;
+
+      /* Re-enable interrupts and go to sleep atomically. */
+      ENERGEST_SWITCH(ENERGEST_TYPE_CPU, ENERGEST_TYPE_LPM);
+      /* We only want to measure the processing done in IRQs when we
+         are asleep, so we discard the processing time done when we
+         were awake. */
+      energest_type_set(ENERGEST_TYPE_IRQ, irq_energest);
+      watchdog_stop();
+      _BIS_SR(GIE | SCG0 | SCG1 | CPUOFF); /* LPM3 sleep. This
+                                              statement will block
+                                              until the CPU is
+                                              woken up by an
+                                              interrupt that sets
+                                              the wake up flag. */
+
+      /* We get the current processing time for interrupts that was
+         done during the LPM and store it for next time around.  */
+      dint();
+      irq_energest = energest_type_time(ENERGEST_TYPE_IRQ);
+      eint();
+      watchdog_start();
+      ENERGEST_SWITCH(ENERGEST_TYPE_LPM, ENERGEST_TYPE_CPU);
+    }
+  }
+  return 0;
 }
 /*---------------------------------------------------------------------------*/
 #if LOG_CONF_ENABLED
