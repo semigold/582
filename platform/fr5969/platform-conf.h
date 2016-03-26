@@ -101,12 +101,12 @@ typedef unsigned long off_t;
  /* Green LED is LED2  on P1.0 */
 #define LEDS_GREEN_BIT   BIT0
 #define LEDS_GREEN_PXDIR P1DIR
-#define LEDS_GREEN_PxOUT P1OUT
+#define LEDS_GREEN_PXOUT P1OUT
 
 /* RED LED is LED1  on P4.6 */
 #define LEDS_RED_BIT     BIT6
 #define LEDS_RED_PXDIR   P4DIR
-#define LEDS_RED_PxOUT   P4OUT
+#define LEDS_RED_PXOUT   P4OUT
 
 /* Button ports */
 

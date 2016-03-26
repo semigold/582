@@ -45,10 +45,10 @@ void
 leds_arch_init(void)
 {
   // Configure GPIO
-  LEDS_GREEN_PxOUT &= ~LEDS_GREEN_BIT;  // Clear P1.0 output latch for a defined power-on state
-  LEDS_GREEN_PxDIR |= LEDS_GREEN_BIT;   // Set P1.0 to output direction
+  LEDS_GREEN_PXOUT &= ~LEDS_GREEN_BIT;  // Clear P1.0 output latch for a defined power-on state
+  LEDS_GREEN_PXDIR |= LEDS_GREEN_BIT;   // Set P1.0 to output direction
 
-  LEDS_RED_PxOUT &= ~LEDS_RED_BIT;      // Clear P4.6 to output latch for a defined power-on state
+  LEDS_RED_PXOUT &= ~LEDS_RED_BIT;      // Clear P4.6 to output latch for a defined power-on state
   LEDS_RED_PXDIR |= LEDS_RED_BIT;       // Set P4.6 to output direction
 
   // Disable the GPIO power-on default high-impedance mode to activate
@@ -59,8 +59,8 @@ leds_arch_init(void)
 unsigned char
 leds_arch_get(void)
 {
-  return (LEDS_GREEN_PxOUT & LEDS_GREEN_BIT) ? LEDS_GREEN: 0 
-  | (LEDS_RED_PxOUT & LEDS_RED_BIT) ? LEDS_RED : 0;
+  return (LEDS_GREEN_PXOUT & LEDS_GREEN_BIT) ? LEDS_GREEN: 0 
+  | (LEDS_RED_PXOUT & LEDS_RED_BIT) ? LEDS_RED : 0;
 }
 /*---------------------------------------------------------------------------*/
 void
@@ -68,13 +68,13 @@ leds_arch_set(unsigned char l)
 {
   
   if(l & LEDS_GREEN)
-    LEDS_GREEN_PxOUT |= LEDS_GREEN_BIT;  // turn green on
+    LEDS_GREEN_PXOUT |= LEDS_GREEN_BIT;  // turn green on
   else
-    LEDS_GREEN_PxOUT &= ~LEDS_GREEN_BIT; // turn green off
+    LEDS_GREEN_PXOUT &= ~LEDS_GREEN_BIT; // turn green off
 
   if (l & LEDS_RED)
-    LEDS_RED_PxOUT |= LEDS_RED_BIT;      // turn red on
+    LEDS_RED_PXOUT |= LEDS_RED_BIT;      // turn red on
   else
-    LEDS_RED_PxOUT &= ~LEDS_RED_BIT;     // turn red off
+    LEDS_RED_PXOUT &= ~LEDS_RED_BIT;     // turn red off
 
 }
