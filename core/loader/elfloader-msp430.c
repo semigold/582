@@ -68,7 +68,7 @@ elfloader_arch_write_rom(int fd, unsigned short textoff, unsigned int size, char
 #if ELFLOADER_CONF_TEXT_IN_ROM
   int i;
   unsigned int ptr;
-  #if CONTIKI_TARGET_FR5969
+  #if __MSP430_HAS_FRAM_FR5XX__
   unsigned short *framptr;
 
   framptr = (unsigned short *)mem;
@@ -83,7 +83,7 @@ elfloader_arch_write_rom(int fd, unsigned short textoff, unsigned int size, char
     fram_write(framptr, (unsigned short *)datamemory, READSIZE/2);
   }
 
-  #else
+  #else /* __MSP430_HAS_FRAM_FR5XX__ */
   unsigned short *flashptr;
 
   flash_setup();

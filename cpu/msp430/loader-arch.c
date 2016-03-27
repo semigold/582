@@ -61,9 +61,9 @@ loader_arch_load(unsigned short startaddr)
   unsigned short codelen, datalen, sumlen;
   int i, j;
   unsigned short ptr;
-  #if CONTIKI_TARGET_FR5969
+  #if __MSP430_HAS_FRAM_FR5XX__
   unsigned short *framptr;
-  #else
+  #else /* __MSP430_HAS_FRAM_FR5XX__ */
   unsigned short *flashptr;
   #endif
   void (* init)(void *);
@@ -160,7 +160,7 @@ loader_arch_load(unsigned short startaddr)
   /* Convert from network byte order to host byte order. */
   codelen = uip_htons(codelen);
   
-  #if CONTIKI_TARGET_FR5969
+  #if __MSP430_HAS_FRAM_FR5XX__
   /* Write program code into FRAM. We use the available space in the
      program's data memory to temporarily store the code before
      writing it into FRAM. */
@@ -175,7 +175,7 @@ loader_arch_load(unsigned short startaddr)
     fram_write(framptr, DATAADDR, READSIZE/2);
   }
 
-  #else
+  #else /* __MSP430_HAS_FRAM_FR5XX__ */
   /* Flash program code into ROM. We use the available space in the
      program's data memory to temporarily store the code before
      flashing it into ROM. */
@@ -229,9 +229,9 @@ loader_arch_load(unsigned short startaddr)
   leds_off(LEDS_GREEN);
   
   /* Execute the loaded program. */
-  #if CONTIKI_TARGET_FR5969
+  #if __MSP430_HAS_FRAM_FR5XX__
   init = ((void (*)(void *))FRAMADDR);
-  #else
+  #else /* __MSP430_HAS_FRAM_FR5XX__ */
   init = ((void (*)(void *))FLASHADDR);
   #endif
   init((void *)0);
