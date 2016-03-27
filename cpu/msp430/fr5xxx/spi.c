@@ -52,14 +52,15 @@ spi_init(void)
   P1SEL1 |= BIT6 | BIT7;                 // P1.6,7 UCB0SDA, UCB0SCL
   P1SEL0 &= ~(BIT6 | BIT7);
   P2SEL1 |= BIT2;
-  P2SEL0 &= ~(BIT2);                     // P2.2 UCB0CLK (don't know if necessary)
+  P2SEL0 &= ~BIT2;                       // P2.2 UCB0CLK (don't know if necessary)
+
   // Disable the GPIO power-on default high-impedance mode to activate
   // previously configured port settings
   PM5CTL0 &= ~LOCKLPM5;
 
   // Initialize ports for communication with SPI units.
 
-  UCB0CTLW0  =  UCSWRST;                 // **Put state machine in reset**
+  UCB0CTLW0 |=  UCSWRST;                 // **Put state machine in reset**
   UCB0CTLW0 |=  UCSSEL__SMCLK;           // smclk while usci is reset
 
   /* // MSB-first 8-bit, Master, Synchronous, 3 pin SPI master, no ste,

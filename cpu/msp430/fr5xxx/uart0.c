@@ -88,13 +88,13 @@ uart0_init(unsigned long ubr)
   PM5CTL0 &= ~LOCKLPM5;
 
   /* RS232 */
-  UCA0CTLW0 = UCSWRST;            /* Hold peripheral in reset state */
+  UCA0CTLW0 |= UCSWRST;            /* Hold peripheral in reset state */
   UCA0CTLW0 |= UCSSEL__SMCLK;     /* CLK = SMCLK */
 
   ubr = (MSP430_CPU_SPEED / ubr);
   UCA0BR0 = ubr & 0xff;
   UCA0BR1 = (ubr >> 8) & 0xff;
-  UCA0MCTLW = UCBRS3;             /* Modulation UCBRSx = 3 */
+  UCA0MCTLW |= UCBRS3;             /* Modulation UCBRSx = 3 */
 
   transmitting = 0;
 
