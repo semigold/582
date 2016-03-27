@@ -62,9 +62,9 @@ msp430_init_dco(void)
 
   #ifdef __MSP430FR5739
   CSCTL1 |= DCOFSEL0 + DCOFSEL1;             // Set DCO to 8MHz
-  #elif __MSP430FR5969
+  #elif defined(__MSP430FR5969)
   CSCTL1 |= DCOFSEL_6;                       // Set DCO to 8MHz
-  #elif
+  #else
   #error "Set the DCO speed for your MCU family"
   #endif
 
@@ -81,9 +81,9 @@ msp430_init_dco(void)
   CSCTL4 |= XT1DRIVE_1;                   /* Set XT1 oscillator operating
                                              range to 8 MHz to 16 MHz. */
   CSCTL4 &= ~XT1OFF;                      /* Set XT1 to be on  */
-  #elif __MSP430FR5969
+  #elif defined (__MSP430FR5969)
   CSCTL4 &= ~LFXTOFF;                     /* Set LFXT1 to be on */
-  #elif
+  #else
   #error "Set CSCTL4 for your MCU family"
   #endif
 
@@ -92,9 +92,9 @@ msp430_init_dco(void)
 
     #ifdef __MSP430FR5739
     CSCTL5 &= ~XT1OFFG;                   // Clear XT1 fault flag
-    #elif __MSP430FR5969
+    #elif defined (__MSP430FR5969)
     CSCTL5 &= ~LFXTOFFG;                  // Clear LFXT1 fault flag
-    #elif
+    #else
     #error "Clear XT1 fault flag for your MCU family"
     #endif
 

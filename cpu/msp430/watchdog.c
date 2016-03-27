@@ -106,7 +106,7 @@ watchdog_init(void)
      initialization. */
   counter = 0;
   watchdog_stop();
-#if __MSP430_HAS_SFR__
+#ifdef __MSP430_HAS_SFR__
   SFRIFG1 &= ~WDTIFG;
   SFRIE1 |= WDTIE;
 #else
