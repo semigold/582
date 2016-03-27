@@ -59,14 +59,45 @@ msp430_init_dco(void)
 
   // Clock System Setup
   CSCTL0_H = CSKEY >> 8;                    // Unlock CS registers
-  CSCTL1 = DCOFSEL_6;                       // Set DCO to 8MHz
-  CSCTL2 = SELA__LFXTCLK | SELS__DCOCLK | SELM__DCOCLK;  // Set SMCLK = MCLK = DCO
-                                            // ACLK = XT1
-  CSCTL3 = DIVA__1 | DIVS__1 | DIVM__1;     // Set all dividers to 1
-  CSCTL4 &= ~LFXTOFF;
+
+  #ifdef __MSP430FR5739
+  CSCTL1 |= DCOFSEL0 + DCOFSEL1;             // Set DCO to 8MHz
+  #elif __MSP430FR5969
+  CSCTL1 |= DCOFSEL_6;                       // Set DCO to 8MHz
+  #elif
+  #error "Set the DCO speed for your MCU family"
+  #endif
+
+  /*
+  *  SELA_0 differs on platforms, but 5969 it expands to
+  *  SELA__LFXTCLK; 5739 it expands to SELA__XT1CLK
+  */
+
+  CSCTL2 = SELA_0 | SELS__DCOCLK | SELM__DCOCLK;       // Set SMCLK=MCLK=DCO
+                                                       // ACLK=XT1
+  CSCTL3 = DIVA_0 | DIVS_0 | DIVM_0;                   // Set all dividers
+
+  #ifdef __MSP430FR5739
+  CSCTL4 |= XT1DRIVE_1;                   /* Set XT1 oscillator operating
+                                             range to 8 MHz to 16 MHz. */
+  CSCTL4 &= ~XT1OFF;                      /* Set XT1 to be on  */
+  #elif __MSP430FR5969
+  CSCTL4 &= ~LFXTOFF;                     /* Set LFXT1 to be on */
+  #elif
+  #error "Set CSCTL4 for your MCU family"
+  #endif
+
   do
   {
-    CSCTL5 &= ~LFXTOFFG;                  // Clear XT1 fault flag
+
+    #ifdef __MSP430FR5739
+    CSCTL5 &= ~XT1OFFG;                   // Clear XT1 fault flag
+    #elif __MSP430FR5969
+    CSCTL5 &= ~LFXTOFFG;                  // Clear LFXT1 fault flag
+    #elif
+    #error "Clear XT1 fault flag for your MCU family"
+    #endif
+
     SFRIFG1 &= ~OFIFG;
   } while (SFRIFG1 & OFIFG);                // Test oscillator fault flag
   CSCTL0_H = 0;                             // Lock CS registers
@@ -84,42 +115,175 @@ init_ports(void)
 {
   /* Turn everything off, device drivers enable what is needed. */
   /* All configured for digital I/O */
-  
+  #ifdef __MSP430_HAS_P1SEL0__
   P1SEL0 = 0;
   P1SEL1 = 0;
-  
-  P2SEL0 = 0;
-  P2SEL1 = 0;
 
-  P3SEL0 = 0;
-  P3SEL1 = 0;
-
-  P4SEL0 = 0;
-  P4SEL1 = 0;
-
-  PJSEL0 = 0;
-  PJSEL1 = 0;
-
-  /* All available inputs */
   P1DIR = 0;
   P1OUT = 0;
+
+  P1IE = 0;
+  #endif
+
+  #ifdef __MSP430_HAS_P2SEL0__
+  P2SEL0 = 0;
+  P2SEL1 = 0;
 
   P2DIR = 0;
   P2OUT = 0;
 
+  P2IE = 0;
+  #endif
+
+  #ifdef __MSP430_HAS_P3SEL0__
+  P3SEL0 = 0;
+  P3SEL1 = 0;
+
   P3DIR = 0;
   P3OUT = 0;
+
+  P3IE = 0;
+  #endif
+
+  #ifdef __MSP430_HAS_P4SEL0__
+  P4SEL0 = 0;
+  P4SEL1 = 0;
 
   P4DIR = 0;
   P4OUT = 0;
 
+  P4IE = 0;
+  #endif
+
+  #ifdef __MSP430_HAS_P5SEL0__
+  P5SEL0 = 0;
+  P5SEL1 = 0;
+
+  P5DIR = 0;
+  P5OUT = 0;
+
+  P5IE = 0;
+  #endif
+
+  #ifdef __MSP430_HAS_P6SEL0__
+  P6SEL0 = 0;
+  P6SEL1 = 0;
+
+  P6DIR = 0;
+  P6OUT = 0;
+
+  P6IE = 0;
+  #endif
+
+  #ifdef __MSP430_HAS_P7SEL0__
+  P7SEL0 = 0;
+  P7SEL1 = 0;
+
+  P7DIR = 0;
+  P7OUT = 0;
+
+  P7IE = 0;
+  #endif
+
+  #ifdef __MSP430_HAS_P8SEL0__
+  P8SEL0 = 0;
+  P8SEL1 = 0;
+
+  P8DIR = 0;
+  P8OUT = 0;
+
+  P8IE = 0;
+  #endif
+
+  #ifdef __MSP430_HAS_P9SEL0__
+  P9SEL0 = 0;
+  P9SEL1 = 0;
+
+  P9DIR = 0;
+  P9OUT = 0;
+
+  P9IE = 0;
+  #endif
+
+  #ifdef __MSP430_HAS_P10SEL0__
+  P10SEL0 = 0;
+  P10SEL1 = 0;
+
+  P10DIR = 0;
+  P10OUT = 0;
+
+  P10IE = 0;
+  #endif
+
+  #ifdef __MSP430_HAS_PASEL0__
+  PASEL0 = 0;
+  PASEL1 = 0;
+
+  PADIR = 0;
+  PAOUT = 0;
+
+  PAIE = 0;
+  #endif
+
+  #ifdef __MSP430_HAS_PBSEL0__
+  PBSEL0 = 0;
+  PBSEL1 = 0;
+
+  PBDIR = 0;
+  PBOUT = 0;
+
+  PBIE = 0;
+  #endif
+
+  #ifdef __MSP430_HAS_PCSEL0__
+  PCSEL0 = 0;
+  PCSEL1 = 0;
+
+  PCDIR = 0;
+  PCOUT = 0;
+
+  PCIE = 0;
+  #endif
+
+  #ifdef __MSP430_HAS_PDSEL0__
+  PDSEL0 = 0;
+  PDSEL1 = 0;
+
+  PDDIR = 0;
+  PDOUT = 0;
+
+  PDIE = 0;
+  #endif
+
+  #ifdef __MSP430_HAS_PESEL0__
+  PESEL0 = 0;
+  PESEL1 = 0;
+
+  PEDIR = 0;
+  PEOUT = 0;
+
+  PEIE = 0;
+  #endif
+
+  #ifdef __MSP430_HAS_PFSEL0__
+  PFSEL0 = 0;
+  PFSEL1 = 0;
+
+  PFDIR = 0;
+  PFOUT = 0;
+
+  PFIE = 0;
+  #endif
+
+  #ifdef __MSP430_HAS_PJSEL0__
+  PJSEL0 = 0;
+  PJSEL1 = 0;
+
   PJDIR = 0;
   PJOUT = 0;
 
-  P1IE = 0;
-  P2IE = 0;
-  P3IE = 0;
-  P4IE = 0;
+  PJIE = 0;
+  #endif
 
   // Disable the GPIO power-on default high-impedance mode to activate
   // previously configured port settings
