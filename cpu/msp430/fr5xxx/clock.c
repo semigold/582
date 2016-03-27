@@ -165,11 +165,11 @@ clock_init(void)
   /* TA1CTL = TASSEL__TACLK  | TACLR | ID_1; */
 
 #if INTERVAL==32768/CLOCK_SECOND
-  /* Select TACLK clock, clear TAR, continuous mode */
-  TA1CTL = TASSEL__ACLK  | TACLR | MC__CONTINUOUS;
+  /* Select ACLK clock, clear TAR, continuous mode */
+  TA1CTL = TASSEL__ACLK | TACLR | MC__CONTINUOUS;
 #elif INTERVAL==16384/CLOCK_SECOND
-  /* Select TACLK clock, clear TAR, continuous mode, divide by 2 */
-  TA1CTL = TASSEL__ACLK  | TACLR | MC__CONTINUOUS |ID_1;
+  /* Select ACLK clock, clear TAR, continuous mode, divide by 2 */
+  TA1CTL = TASSEL__ACLK | TACLR | MC__CONTINUOUS |ID_1;
 #else
 #error NEED TO UPDATE clock.c to match interval!
 #endif
