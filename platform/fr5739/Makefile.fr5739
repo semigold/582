@@ -1,8 +1,8 @@
 CONTIKI_TARGET_SOURCEFILES = contiki-main.c 
 
 ARCH=leds.c leds-arch.c \
-    button-sensor.c sensors.c \
-    irq.c slip_uart1.c uart1-putchar.c
+    button-sensor.c \
+    sensors.c irq.c slip_uart1.c uart1-putchar.c
 
 
 CONTIKI_TARGET_DIRS = . dev apps net
@@ -11,14 +11,14 @@ CONTIKI_TARGET_MAIN = contiki-main.c
 endif
 
 ifdef IAR
-CFLAGS += -D__MSP430FR5969__=1 -e --vla -Ohz --multiplier=32 --multiplier_location=4C0 --hw_workaround=CPU40 --core=430X --double=32
+CFLAGS += -D__MSP430FR5739__=1 -e --vla -Ohz --multiplier=32 --multiplier_location=4C0 --hw_workaround=CPU40 --core=430X --double=32
 else
 SMALL=1
 endif
 
 CONTIKI_TARGET_SOURCEFILES += $(ARCH) $(UIPDRIVERS)
 
-MCU=msp430fr5969
+MCU=msp430fr5739
 
 # Platform has a MSP430X MCU with 20-bit support
 CPU_HAS_MSP430X=1
@@ -26,7 +26,7 @@ CPU_HAS_MSP430X=1
 include $(CONTIKI)/cpu/msp430/Makefile.msp430
 
 ifdef IAR
-LDFLAGSNO += -xm "$(IAR_PATH)/lib/dlib/dl430xsfn.r43" -f "$(IAR_PATH)/config/lnk430fr5969.xcl"
+LDFLAGSNO += -xm "$(IAR_PATH)/lib/dlib/dl430xsfn.r43" -f "$(IAR_PATH)/config/lnk430fr5739.xcl"
 LDFLAGS += $(LDFLAGSNO) -Felf -yn
 endif
 

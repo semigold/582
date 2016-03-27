@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004, Swedish Institute of Computer Science.
+ * Copyright (c) 2005, Swedish Institute of Computer Science.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,60 +26,38 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- * This file is part of the Contiki operating system.
+ * This file is part of the Configurable Sensor Network Application
+ * Architecture for sensor nodes running the Contiki operating system.
  *
- * Author: Adam Dunkels <adam@sics.se>
  *
+ * -----------------------------------------------------------------
+ *
+ * Author  : Adam Dunkels, Joakim Eriksson, Niclas Finne
+ * Created : 2005-11-01
+ * Updated : $Date: 2010/01/14 20:15:55 $
+ *           $Revision: 1.2 $
  */
 
-#include "contiki-conf.h"
-#include "dev/xmem.h"
+#include "dev/temperature-sensor.h"
 
-#include <stdio.h>
-#include <stdio.h>
-#include <string.h>
-
-#define XMEM_SIZE 1024
-
-static unsigned char xmem[XMEM_SIZE];
 /*---------------------------------------------------------------------------*/
-int
-xmem_pwrite(const void *buf, int size, unsigned long offset)
+static int
+value(int type)
 {
-  /*  int f;
-  char name[400];
-
-  snprintf(name, sizeof(name), "xmem.%d.%d", node_x(), node_y());
-  f = open(name, O_WRONLY | O_APPEND | O_CREAT, 0644);
-  lseek(f, addr, SEEK_SET);
-  write(f, buf, size);
-  close(f);*/
-
-  /*  printf("xmem_write(offset 0x%02x, buf %p, size %l);\n", offset, buf, size);*/
-
-  memcpy(&xmem[offset], buf, size);
-  return size;
+  return 0;
 }
 /*---------------------------------------------------------------------------*/
-int
-xmem_pread(void *buf, int size, unsigned long offset)
+static int
+configure(int type, int c)
 {
-  /*  printf("xmem_read(addr 0x%02x, buf %p, size %d);\n", addr, buf, size);*/
-  memcpy(buf, &xmem[offset], size);
-  return size;
+  return 0;
 }
 /*---------------------------------------------------------------------------*/
-int
-xmem_erase(long nbytes, unsigned long offset)
+static int
+status(int type)
 {
-  /*  printf("xmem_read(addr 0x%02x, buf %p, size %d);\n", addr, buf, size);*/
-  memset(&xmem[offset], 0, nbytes);
-  return nbytes;
+  return 0;
 }
 /*---------------------------------------------------------------------------*/
-void
-xmem_init(void)
-{
-
-}
-/*---------------------------------------------------------------------------*/
+SENSORS_SENSOR(temperature_sensor, TEMPERATURE_SENSOR,
+	       value, configure, status);

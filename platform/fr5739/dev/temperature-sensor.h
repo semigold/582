@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008, Swedish Institute of Computer Science
+ * Copyright (c) 2005, Swedish Institute of Computer Science.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,53 +26,25 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- * This file is part of the Contiki operating system.
+ * This file is part of the Configurable Sensor Network Application
+ * Architecture for sensor nodes running the Contiki operating system.
  *
+ *
+ * -----------------------------------------------------------------
+ *
+ * Author  : Adam Dunkels, Joakim Eriksson, Niclas Finne
+ * Created : 2005-11-01
+ * Updated : $Date: 2006/06/17 22:41:31 $
+ *           $Revision: 1.1 $
  */
 
-/**
- * \file
- *	Coffee architecture-dependent header for the native platform.
- * \author
- * 	Nicolas Tsiftes <nvt@sics.se>
- */
+#ifndef TEMPERATURE_SENSOR_H_
+#define TEMPERATURE_SENSOR_H_
 
-#ifndef CFS_COFFEE_ARCH_H
-#define CFS_COFFEE_ARCH_H
+#include "lib/sensors.h"
 
-#include "contiki-conf.h"
-#include "dev/xmem.h"
+extern const struct sensors_sensor temperature_sensor;
 
-#define COFFEE_SECTOR_SIZE		65536UL
-#define COFFEE_PAGE_SIZE		256UL
-#define COFFEE_START			0
-#define COFFEE_SIZE			((1024UL * 1024UL) - COFFEE_START)
-#define COFFEE_NAME_LENGTH		16
-#define COFFEE_DYN_SIZE			16384
-#define COFFEE_MAX_OPEN_FILES		6
-#define COFFEE_FD_SET_SIZE		8
-#define COFFEE_LOG_DIVISOR		4
-#define COFFEE_LOG_SIZE			8192
-#define COFFEE_LOG_TABLE_LIMIT		256
-#define COFFEE_MICRO_LOGS		0
-#define COFFEE_IO_SEMANTICS		1
+#define TEMPERATURE_SENSOR "Temperature"
 
-#define COFFEE_WRITE(buf, size, offset)				\
-		xmem_pwrite((char *)(buf), (size), COFFEE_START + (offset))
-
-#define COFFEE_READ(buf, size, offset)				\
-  		xmem_pread((char *)(buf), (size), COFFEE_START + (offset))
-
-#define COFFEE_ERASE(sector)					\
-  		xmem_erase(COFFEE_SECTOR_SIZE, COFFEE_START + (sector) * COFFEE_SECTOR_SIZE)
-
-#define READ_HEADER(hdr, page)						\
-  COFFEE_READ((hdr), sizeof (*hdr), (page) * COFFEE_PAGE_SIZE)
-
-#define WRITE_HEADER(hdr, page)						\
-  COFFEE_WRITE((hdr), sizeof (*hdr), (page) * COFFEE_PAGE_SIZE)
-
-/* Coffee types. */
-typedef int16_t coffee_page_t;
-
-#endif /* !COFFEE_ARCH_H */
+#endif /* TEMPERATURE_SENSOR_H_ */
