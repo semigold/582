@@ -77,11 +77,11 @@ msp430_init_dco(void)
                                                        // ACLK=XT1
   CSCTL3 = DIVA_0 | DIVS_0 | DIVM_0;                   // Set all dividers
 
-  #ifdef __MSP430FR5739
+  #ifdef XT1OFFG
   CSCTL4 |= XT1DRIVE_0;                   /* Set XT1 oscillator power consumption
                                              to the lowest setting */
   CSCTL4 &= ~XT1OFF;                      /* Set XT1 to be on  */
-  #elif defined (__MSP430FR5969)
+  #elif defined (LFXTOFFG)
   CSCTL4 &= ~LFXTOFF;                     /* Set LFXT1 to be on */
   #else
   #error "Set CSCTL4 for your MCU family"
