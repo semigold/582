@@ -58,11 +58,11 @@ msp430_init_dco(void)
   PM5CTL0 &= ~LOCKLPM5;
 
   // Clock System Setup
-  CSCTL0_H = CSKEY >> 8;                    // Unlock CS registers
+  CSCTL0_H = CSKEY >> 8;                     // Unlock CS registers
 
-  #ifdef __MSP430FR5739
-  CSCTL1 |= DCOFSEL0 + DCOFSEL1;             // Set DCO to 8MHz
-  #elif defined(__MSP430FR5969)
+  #ifdef __MSP430FR57XX_FAMILY__
+  CSCTL1 |= DCOFSEL_3;                       // Set DCO to 8MHz
+  #elif defined(__MSP430FR5XX_6XX_FAMILY__)
   CSCTL1 |= DCOFSEL_6;                       // Set DCO to 8MHz
   #else
   #error "Set the DCO speed for your MCU family"
