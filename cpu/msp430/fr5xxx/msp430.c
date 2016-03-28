@@ -78,8 +78,8 @@ msp430_init_dco(void)
   CSCTL3 = DIVA_0 | DIVS_0 | DIVM_0;                   // Set all dividers
 
   #ifdef __MSP430FR5739
-  CSCTL4 |= XT1DRIVE_1;                   /* Set XT1 oscillator operating
-                                             range to 8 MHz to 16 MHz. */
+  CSCTL4 |= XT1DRIVE_0;                   /* Set XT1 oscillator power consumption
+                                             to the lowest setting */
   CSCTL4 &= ~XT1OFF;                      /* Set XT1 to be on  */
   #elif defined (__MSP430FR5969)
   CSCTL4 &= ~LFXTOFF;                     /* Set LFXT1 to be on */
