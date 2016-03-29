@@ -55,7 +55,7 @@ msp430_init_dco(void)
   // Clock System Setup
   CSCTL0_H = CSKEY >> 8;                     // Unlock CS registers
 
-  #ifdef defined (__MSP430FR57XX_FAMILY__) || defined(__MSP430FR5739)
+  #if defined (__MSP430FR57XX_FAMILY__) || (__MSP430FR5739)
   CSCTL1 |= DCOFSEL_3;                       // Set DCO to 8MHz
   #elif defined(__MSP430FR5XX_6XX_FAMILY__) || defined(__MSP430FR5969)
   CSCTL1 |= DCOFSEL_6;                       // Set DCO to 8MHz
