@@ -117,11 +117,6 @@ uart1_init(unsigned long ubr)
   P2SEL1 |= BIT5 | BIT6;  /* P2.5,6 = USCI_A1 TXD/RXD */
   P2SEL0 &= ~(BIT5| BIT6);
 
-  // Disable the GPIO power-on default high-impendance mode to activate
-  // previously configured port settings
-
-  PM5CTL0 &= ~LOCKLPM5;
-
   /* RS232 */
   UCA1CTLW0 |= UCSWRST;            /* Hold peripheral in reset state */
   UCA1CTLW0 |= UCSSEL__SMCLK;     /* CLK = SMCLK */
