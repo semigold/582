@@ -55,9 +55,9 @@ msp430_init_dco(void)
   // Clock System Setup
   CSCTL0_H = CSKEY >> 8;                     // Unlock CS registers
 
-  #ifdef __MSP430FR57XX_FAMILY__
+  #ifdef defined (__MSP430FR57XX_FAMILY__) || defined(__MSP430FR5739)
   CSCTL1 |= DCOFSEL_3;                       // Set DCO to 8MHz
-  #elif defined(__MSP430FR5XX_6XX_FAMILY__)
+  #elif defined(__MSP430FR5XX_6XX_FAMILY__) || defined(__MSP430FR5969)
   CSCTL1 |= DCOFSEL_6;                       // Set DCO to 8MHz
   #else
   #error "Set the DCO speed for your MCU family"
@@ -85,9 +85,9 @@ msp430_init_dco(void)
   do
   {
 
-    #ifdef __MSP430FR5739
+    #ifdef XT1OFFG
     CSCTL5 &= ~XT1OFFG;                   // Clear XT1 fault flag
-    #elif defined (__MSP430FR5969)
+    #elif defined (LFXTOFFG)
     CSCTL5 &= ~LFXTOFFG;                  // Clear LFXT1 fault flag
     #else
     #error "Clear XT1 fault flag for your MCU family"
