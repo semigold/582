@@ -58,7 +58,13 @@
 /* A tricky #define to stringify _Pragma parameters */
 #define __PRAGMA__(x) _Pragma(#x)
 
-#if defined(__GNUC__)  &&  defined(__MSP430__)
+#if defined(__MSP430_HEADER_VERSION__) && __MSP430_HEADER_VERSION__ > 1073
+/* The last MSP430MCU update https://sourceforge.net/projects/mspgcc/
+  was from 20130321, anything greater than 1073 is from the TI backed
+  compiler and has some changes
+*/
+#define ISR(a,b) __attribute__((__interrupt__(a ## _VECTOR))) void b(void)
+#elif defined(__GNUC__)  &&  defined(__MSP430__)
     /* This is the MSPGCC compiler */
 #define ISR(a,b) interrupt(a ## _VECTOR) b(void)
 #elif defined(__AQCOMPILER__)

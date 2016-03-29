@@ -44,7 +44,17 @@
 #ifdef __MSPGCC__
 #include <msp430.h>
 #include <legacymsp430.h>
-#else /* __MSPGCC__ */
+#elif defined(__MSP430_HEADER_VERSION__) && __MSP430_HEADER_VERSION__ > 1073
+/* The last MSP430MCU update https://sourceforge.net/projects/mspgcc/
+  was from 20130321, anything greater than 1073 is from the TI backed
+  compiler and has some changes
+*/
+#define dint() __disable_interrupt()
+#define eint() __enable_interrupt()
+#include <msp430.h>
+#include <signal.h>
+
+#else /* __MSPGCC __ */
 #include <io.h>
 #include <signal.h>
 #if !defined(MSP430_MEMCPY_WORKAROUND) && (__GNUC__ < 4)
