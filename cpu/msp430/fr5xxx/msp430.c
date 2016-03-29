@@ -52,11 +52,6 @@ msp430_init_dco(void)
 
   PJSEL0 |= BIT4 | BIT5;                    // For XT1
 
-  // Disable the GPIO power-on default high-impedance mode to activate
-  // previously configured port settings
-
-  PM5CTL0 &= ~LOCKLPM5;
-
   // Clock System Setup
   CSCTL0_H = CSKEY >> 8;                     // Unlock CS registers
 
@@ -114,175 +109,174 @@ static void
 init_ports(void)
 {
   /* Turn everything off, device drivers enable what is needed. */
-  /* All configured for digital I/O */
-  #ifdef __MSP430_HAS_P1SEL0__
+
+  /* Configure all ports for output and set to low */
+  #ifdef __MSP430_HAS_PORT1_R__
   P1SEL0 = 0;
   P1SEL1 = 0;
 
-  P1DIR = 0;
+  P1DIR = 0xFF;
   P1OUT = 0;
 
   P1IE = 0;
   #endif
 
-  #ifdef __MSP430_HAS_P2SEL0__
+  #ifdef __MSP430_HAS_PORT2_R__
   P2SEL0 = 0;
   P2SEL1 = 0;
 
-  P2DIR = 0;
+  P2DIR = 0xFF;
   P2OUT = 0;
 
   P2IE = 0;
   #endif
 
-  #ifdef __MSP430_HAS_P3SEL0__
+  #ifdef __MSP430_HAS_PORT3_R__
   P3SEL0 = 0;
   P3SEL1 = 0;
 
-  P3DIR = 0;
+  P3DIR = 0xFF;
   P3OUT = 0;
 
   P3IE = 0;
   #endif
 
-  #ifdef __MSP430_HAS_P4SEL0__
+  #ifdef __MSP430_HAS_PORT4_R__
   P4SEL0 = 0;
   P4SEL1 = 0;
 
-  P4DIR = 0;
+  P4DIR = 0xFF;
   P4OUT = 0;
 
   P4IE = 0;
   #endif
 
-  #ifdef __MSP430_HAS_P5SEL0__
+  #ifdef __MSP430_HAS_PORT5_R__
   P5SEL0 = 0;
   P5SEL1 = 0;
 
-  P5DIR = 0;
+  P5DIR = 0xFF;
   P5OUT = 0;
 
   P5IE = 0;
   #endif
 
-  #ifdef __MSP430_HAS_P6SEL0__
+  #ifdef __MSP430_HAS_PORT6_R__
   P6SEL0 = 0;
   P6SEL1 = 0;
 
-  P6DIR = 0;
+  P6DIR = 0xFF;
   P6OUT = 0;
 
   P6IE = 0;
   #endif
 
-  #ifdef __MSP430_HAS_P7SEL0__
+  #ifdef __MSP430_HAS_PORT7_R__
   P7SEL0 = 0;
   P7SEL1 = 0;
 
-  P7DIR = 0;
+  P7DIR = 0xFF;
   P7OUT = 0;
 
   P7IE = 0;
   #endif
 
-  #ifdef __MSP430_HAS_P8SEL0__
+  #ifdef __MSP430_HAS_PORT8_R__
   P8SEL0 = 0;
   P8SEL1 = 0;
 
-  P8DIR = 0;
+  P8DIR = 0xFF;
   P8OUT = 0;
 
   P8IE = 0;
   #endif
 
-  #ifdef __MSP430_HAS_P9SEL0__
+  #ifdef __MSP430_HAS_PORT9_R__
   P9SEL0 = 0;
   P9SEL1 = 0;
 
-  P9DIR = 0;
+  P9DIR = 0xFF;
   P9OUT = 0;
 
   P9IE = 0;
   #endif
 
-  #ifdef __MSP430_HAS_P10SEL0__
+  #ifdef __MSP430_HAS_PORT10_R__
   P10SEL0 = 0;
   P10SEL1 = 0;
 
-  P10DIR = 0;
+  P10DIR = 0xFF;
   P10OUT = 0;
 
   P10IE = 0;
   #endif
 
-  #ifdef __MSP430_HAS_PASEL0__
+  #ifdef __MSP430_HAS_PORT11_R__
+  P11SEL0 = 0;
+  P11SEL1 = 0;
+
+  P11DIR = 0xFF;
+  P11OUT = 0;
+
+  P11IE = 0;
+  #endif
+
+  #ifdef __MSP430_HAS_PORTA_R__
   PASEL0 = 0;
   PASEL1 = 0;
 
-  PADIR = 0;
+  PADIR = 0xFFFF;
   PAOUT = 0;
 
-  PAIE = 0;
   #endif
 
-  #ifdef __MSP430_HAS_PBSEL0__
+  #ifdef __MSP430_HAS_PORTB_R__
   PBSEL0 = 0;
   PBSEL1 = 0;
 
-  PBDIR = 0;
+  PBDIR = 0xFFFF;
   PBOUT = 0;
 
-  PBIE = 0;
   #endif
 
-  #ifdef __MSP430_HAS_PCSEL0__
+  #ifdef __MSP430_HAS_PORTC_R__
   PCSEL0 = 0;
   PCSEL1 = 0;
 
-  PCDIR = 0;
+  PCDIR = 0xFFFF;
   PCOUT = 0;
-
-  PCIE = 0;
   #endif
 
-  #ifdef __MSP430_HAS_PDSEL0__
+  #ifdef __MSP430_HAS_PORTD_R__
   PDSEL0 = 0;
   PDSEL1 = 0;
 
-  PDDIR = 0;
+  PDDIR = 0xFFFF;
   PDOUT = 0;
-
-  PDIE = 0;
   #endif
 
-  #ifdef __MSP430_HAS_PESEL0__
+  #ifdef __MSP430_HAS_PORTE_R__
   PESEL0 = 0;
   PESEL1 = 0;
 
-  PEDIR = 0;
+  PEDIR = 0xFFFF;
   PEOUT = 0;
-
-  PEIE = 0;
   #endif
 
-  #ifdef __MSP430_HAS_PFSEL0__
+  #ifdef __MSP430_HAS_PORTF_R__
   PFSEL0 = 0;
   PFSEL1 = 0;
 
-  PFDIR = 0;
+  PFDIR = 0xFFFF;
   PFOUT = 0;
-
-  PFIE = 0;
   #endif
 
-  #ifdef __MSP430_HAS_PJSEL0__
+  #ifdef __MSP430_HAS_PORTJ_R__
   PJSEL0 = 0;
   PJSEL1 = 0;
 
-  PJDIR = 0;
+  PJDIR = 0xFFFF;
   PJOUT = 0;
-
-  PJIE = 0;
   #endif
 
   // Disable the GPIO power-on default high-impedance mode to activate
