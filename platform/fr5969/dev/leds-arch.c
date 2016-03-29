@@ -50,10 +50,6 @@ leds_arch_init(void)
 
   LEDS_RED_PXOUT &= ~LEDS_RED_BIT;      // Clear P4.6 to output latch for a defined power-on state
   LEDS_RED_PXDIR |= LEDS_RED_BIT;       // Set P4.6 to output direction
-
-  // Disable the GPIO power-on default high-impedance mode to activate
-  // previously configured port settings. The oscillator should now start...
-  PM5CTL0 &= ~LOCKLPM5;
 }
 /*---------------------------------------------------------------------------*/
 unsigned char

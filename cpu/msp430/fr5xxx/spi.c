@@ -54,10 +54,6 @@ spi_init(void)
   P2SEL1 |= BIT2;
   P2SEL0 &= ~BIT2;                       // P2.2 UCB0CLK (don't know if necessary)
 
-  // Disable the GPIO power-on default high-impedance mode to activate
-  // previously configured port settings
-  PM5CTL0 &= ~LOCKLPM5;
-
   // Initialize ports for communication with SPI units.
 
   UCB0CTLW0 |=  UCSWRST;                 // **Put state machine in reset**
