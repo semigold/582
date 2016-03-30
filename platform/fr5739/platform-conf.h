@@ -100,45 +100,37 @@ typedef unsigned long off_t;
 
 /* all are blue */
 
- /* LED1 on PJ.0 */
+/* LED 1, 2, 3, 4 share the same Port */
+#define LEDS_1234_PXDIR PJDIR
+#define LEDS_1234_PXOUT PJOUT
+
+/* LED1 on PJ.0 */
 #define LEDS_1_BIT   BIT0
-#define LEDS_1_PXDIR PJDIR
-#define LEDS_1_PXOUT PJOUT
 
 /* LED2 on PJ.1 */
-#define LEDS_2_BIT     BIT1
-#define LEDS_2_PXDIR   PJDIR
-#define LEDS_2_PXOUT   PJOUT
+#define LEDS_2_BIT   BIT1
 
 /* LED3 on PJ.2 */
 #define LEDS_3_BIT   BIT2
-#define LEDS_3_PXDIR PJDIR
-#define LEDS_3_PXOUT PJOUT
 
 /* LED4 on PJ.3 */
-#define LEDS_4_BIT     BIT3
-#define LEDS_4_PXDIR   PJDIR
-#define LEDS_4_PXOUT   PJOUT
+#define LEDS_4_BIT   BIT3
 
- /* LED5 on P3.4 */
+/* LEDS 5, 6, 7, 8 share the same Port */
+#define LEDS_5678_PXDIR P3DIR
+#define LEDS_5678_PXOUT P3OUT
+
+/* LED5 on P3.4 */
 #define LEDS_5_BIT   BIT4
-#define LEDS_5_PXDIR P3DIR
-#define LEDS_5_PXOUT P3OUT
 
 /* LED6 on P3.5 */
-#define LEDS_6_BIT     BIT5
-#define LEDS_6_PXDIR   P3DIR
-#define LEDS_6_PXOUT   P3OUT
+#define LEDS_6_BIT   BIT5
 
 /* LED7 on P3.6 */
 #define LEDS_7_BIT   BIT6
-#define LEDS_7_PXDIR P3DIR
-#define LEDS_7_PXOUT P3OUT
 
 /* LED8 on P3.7 */
-#define LEDS_8_BIT     BIT7
-#define LEDS_8_PXDIR   P3DIR
-#define LEDS_8_PXOUT   P3OUT
+#define LEDS_8_BIT   BIT7
 
 #define LEDS_1    BIT0
 #define LEDS_2    BIT1

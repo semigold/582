@@ -45,29 +45,18 @@ void
 leds_arch_init(void)
 {
   // Configure GPIO
-  LEDS_1_PXOUT &= ~LEDS_1_BIT;      // Clear PJ.0 output latch for a defined power-on state
-  LEDS_1_PXDIR |= LEDS_1_BIT;       // Set PJ.0 to output direction
 
-  LEDS_2_PXOUT &= ~LEDS_2_BIT;      // Clear PJ.1 to output latch for a defined power-on state
-  LEDS_2_PXDIR |= LEDS_2_BIT;       // Set PJ.1 to output direction
+  // Clear PJ.0, 1, 2, 3 output latch for a defined power-on state
+  // Set PJ.0, 1, 2, 3 to output direction
 
-  LEDS_3_PXOUT &= ~LEDS_3_BIT;      // Clear PJ.2 output latch for a defined power-on state
-  LEDS_3_PXDIR |= LEDS_3_BIT;       // Set PJ.2 to output direction
+  LEDS_1234_PXOUT &= ~(LEDS_1_BIT | LEDS_2_BIT | LEDS_3_BIT | LEDS_4_BIT);
+  LEDS_1234_PXDIR |=  (LEDS_1_BIT | LEDS_2_BIT | LEDS_3_BIT | LEDS_4_BIT);
 
-  LEDS_4_PXOUT &= ~LEDS_4_BIT;      // Clear PJ.3 to output latch for a defined power-on state
-  LEDS_4_PXDIR |= LEDS_4_BIT;       // Set PJ.3 to output direction
+  // Clear P3.4, 5, 6, 7 output latch for a defined power-on state
+  // Set P3.4, 5, 6, 7 to output direction
 
-  LEDS_5_PXOUT &= ~LEDS_5_BIT;      // Clear P3.4 output latch for a defined power-on state
-  LEDS_5_PXDIR |= LEDS_5_BIT;       // Set P3.4 to output direction
-
-  LEDS_6_PXOUT &= ~LEDS_6_BIT;      // Clear P3.5 to output latch for a defined power-on state
-  LEDS_6_PXDIR |= LEDS_6_BIT;       // Set P3.5 to output direction
-
-  LEDS_7_PXOUT &= ~LEDS_7_BIT;      // Clear P3.6 output latch for a defined power-on state
-  LEDS_7_PXDIR |= LEDS_7_BIT;       // Set P3.6 to output direction
-
-  LEDS_8_PXOUT &= ~LEDS_8_BIT;      // Clear P3.7 to output latch for a defined power-on state
-  LEDS_8_PXDIR |= LEDS_8_BIT;       // Set P3.7 to output direction
+  LEDS_5678_PXOUT &= ~(LEDS_5_BIT | LEDS_6_BIT | LEDS_7_BIT | LEDS_8_BIT);
+  LEDS_5678_PXDIR |=  (LEDS_5_BIT | LEDS_6_BIT | LEDS_7_BIT | LEDS_8_BIT);
 
 }
 /*---------------------------------------------------------------------------*/
@@ -75,28 +64,28 @@ unsigned char
 leds_arch_get(void)
 {
   unsigned char ledv = 0;
-  if(LEDS_1_PXOUT & LEDS_1)
+  if(LEDS_1234_PXOUT & LEDS_1)
     ledv |= LEDS_1_BIT;
   
-  if(LEDS_2_PXOUT & LEDS_2)
+  if(LEDS_1234_PXOUT & LEDS_2)
     ledv |= LEDS_2_BIT;
 
-  if(LEDS_3_PXOUT & LEDS_3)
+  if(LEDS_1234_PXOUT & LEDS_3)
     ledv |= LEDS_3_BIT;
   
-  if(LEDS_4_PXOUT & LEDS_4)
+  if(LEDS_1234_PXOUT & LEDS_4)
     ledv |= LEDS_4_BIT;
   
-  if(LEDS_5_PXOUT & LEDS_5)
+  if(LEDS_5678_PXOUT & LEDS_5)
     ledv |= LEDS_5_BIT;
   
-  if(LEDS_6_PXOUT & LEDS_6)
+  if(LEDS_5678_PXOUT & LEDS_6)
     ledv |= LEDS_6_BIT;
   
-  if(LEDS_7_PXOUT & LEDS_7)
+  if(LEDS_5678_PXOUT & LEDS_7)
     ledv |= LEDS_7_BIT;
   
-  if(LEDS_8_PXOUT & LEDS_8)
+  if(LEDS_5678_PXOUT & LEDS_8)
     ledv |= LEDS_8_BIT;
   
   return ledv;
@@ -111,43 +100,43 @@ leds_arch_set(unsigned char l)
   *  off otherwise
   */
   if(l & LEDS_1)
-    LEDS_1_PXOUT |= LEDS_1_BIT;  // turn LED on
+    LEDS_1234_PXOUT |= LEDS_1_BIT;  // turn LED on
   else
-    LEDS_1_PXOUT &= ~LEDS_1_BIT; // turn LED off
+    LEDS_1234_PXOUT &= ~LEDS_1_BIT; // turn LED off
 
   if(l & LEDS_2)
-    LEDS_2_PXOUT |= LEDS_2_BIT;
+    LEDS_1234_PXOUT |= LEDS_2_BIT;
   else
-    LEDS_2_PXOUT &= ~LEDS_2_BIT;
+    LEDS_1234_PXOUT &= ~LEDS_2_BIT;
 
   if(l & LEDS_3)
-    LEDS_3_PXOUT |= LEDS_3_BIT;
+    LEDS_1234_PXOUT |= LEDS_3_BIT;
   else
-    LEDS_3_PXOUT &= ~LEDS_3_BIT;
+    LEDS_1234_PXOUT &= ~LEDS_3_BIT;
 
   if(l & LEDS_4)
-    LEDS_4_PXOUT |= LEDS_4_BIT;
+    LEDS_1234_PXOUT |= LEDS_4_BIT;
   else
-    LEDS_4_PXOUT &= ~LEDS_4_BIT;
+    LEDS_1234_PXOUT &= ~LEDS_4_BIT;
 
   if(l & LEDS_5)
-    LEDS_5_PXOUT |= LEDS_5_BIT;
+    LEDS_5678_PXOUT |= LEDS_5_BIT;
   else
-    LEDS_5_PXOUT &= ~LEDS_5_BIT;
+    LEDS_5678_PXOUT &= ~LEDS_5_BIT;
 
   if(l & LEDS_6)
-    LEDS_6_PXOUT |= LEDS_6_BIT;
+    LEDS_5678_PXOUT |= LEDS_6_BIT;
   else
-    LEDS_6_PXOUT &= ~LEDS_6_BIT;
+    LEDS_5678_PXOUT &= ~LEDS_6_BIT;
 
   if(l & LEDS_7)
-    LEDS_7_PXOUT |= LEDS_7_BIT;
+    LEDS_5678_PXOUT |= LEDS_7_BIT;
   else
-    LEDS_7_PXOUT &= ~LEDS_7_BIT;
+    LEDS_5678_PXOUT &= ~LEDS_7_BIT;
 
   if(l & LEDS_8)
-    LEDS_8_PXOUT |= LEDS_8_BIT;
+    LEDS_5678_PXOUT |= LEDS_8_BIT;
   else
-    LEDS_8_PXOUT &= ~LEDS_8_BIT;
+    LEDS_5678_PXOUT &= ~LEDS_8_BIT;
 
 }
