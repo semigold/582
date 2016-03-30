@@ -44,7 +44,7 @@
 /* struct for UART Baud rate related registers */
 struct uart_parameters {
   unsigned int ucaxbrw;   /* eUSCI_Ax Baud Rate Control Word Register; Holds UCBRx */
-  unsigned int ucaxmctl   /* eUSCI_Ax Modulation Control Word Register; Holds UCBRSx, UCBRFx, UCOS16 */
+  unsigned int ucaxmctl;   /* eUSCI_Ax Modulation Control Word Register; Holds UCBRSx, UCBRFx, UCOS16 */
   unsigned long baud_rate; /* baud rate for the connection */
 };
 typedef uart_parameters uart_params;
