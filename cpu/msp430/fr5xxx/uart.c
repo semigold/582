@@ -33,7 +33,11 @@
  * later.
  */
 #include "dev/uart.h"
- 
+
+/* Table taken from http://www.ti.com/lit/ug/slau272c/slau272c.pdf
+   the family guide for MSP430 FR57XX family. It's similar to the FR59XX family
+*/
+
 const uart_params crystal_settings[CRYSTAL_SETTINGS_LEN] =
 {
   {0x34, 0x49 << 8 | 1  << 4 | 1, 9600  },
@@ -47,7 +51,7 @@ const uart_params crystal_settings[CRYSTAL_SETTINGS_LEN] =
 
  /* find the uart settings in the crystal_settings table using binary search */
 
-uart_params*
+const uart_params*
 find_uart_settings(unsigned long ubr)
 {
   int low = 0;
@@ -56,7 +60,7 @@ find_uart_settings(unsigned long ubr)
   while(low <= high) {
 
     int mid = low + ((high - low) / 2);
-    uart_params *up = &(crystal_settings[mid]);
+    const uart_params *up = &(crystal_settings[mid]);
 
     if(ubr ==  up->baud_rate)
       return up;
