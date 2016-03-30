@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010, Swedish Institute of Computer Science.
+ * Copyright (c) 2016
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -25,29 +25,46 @@
  * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
- *
- * This file is part of the Contiki operating system.
- *
  */
 
-/**
- * \file
- *         UART0 header file
- * \author
- *         Enric M. Calvo <ecalvo@zolertia.com>
+/*
+ * Yet another machine dependent MSP430X UART generic code.
+ * IF2, etc. can not be used here... need to abstract to some macros
+ * later.
  */
-
-#ifndef UART0_H_
-#define UART0_H_
-
-#include "contiki.h"
 #include "dev/uart.h"
+ 
+const uart_params crystal_settings[CRYSTAL_SETTINGS_LEN] =
+{
+  {0x34, 0x49 << 8 | 1  << 4 | 1, 9600  },
+  {0x18, 0xB6 << 8 | 0  << 4 | 1, 19200 },
+  {0x0D, 0x84 << 8 | 0  << 4 | 1, 38400 },
+  {0x08, 0xF7 << 8 | 10 << 4 | 1, 57600 },
+  {0x04, 0x55 << 8 | 5  << 4 | 1, 115200},
+  {0x02, 0xBB << 8 | 2  << 4 | 1, 230400},
+  {0x11, 0x4A << 8 | 0  << 4 | 0, 460800},
+};
 
-#define UART0_BAUD2UBR(baud) ((MSP430_CPU_SPEED)/(baud))
+ /* find the uart settings in the crystal_settings table using binary search */
 
-void uart0_set_input(int (*input)(unsigned char c));
-void uart0_writeb(unsigned char c);
-void uart0_init(unsigned long ubr);
-uint8_t uart0_active(void);
+uart_params*
+find_uart_settings(unsigned long ubr)
+{
+  int low = 0;
+  int high = CRYSTAL_SETTINGS_LEN;
 
-#endif /* UART0_H_ */
+  while(low <= high) {
+
+    int mid = low + ((high - low) / 2);
+    uart_params *up = &(crystal_settings[mid]);
+
+    if(ubr ==  up->baud_rate)
+      return up;
+    else if (ubr > up->baud_rate)
+      low = mid + 1;
+    else
+      high = mid - 1;
+  }
+  /* if value isn't found use the lowest settings */
+  return &(crystal_settings[0]);
+}

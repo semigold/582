@@ -76,7 +76,7 @@ handle_rxdma_timer(void *ptr)
 uint8_t
 uart1_active(void)
 {
-  return (UCA1STATW & UCBUSY)
+  return (UCA1STATW & UCBUSY);
 }
 /*---------------------------------------------------------------------------*/
 void
@@ -124,7 +124,7 @@ uart1_init(unsigned long ubr)
   UCA1CTLW0 &= ~(UCSYNC + UCPEN + UCSPB + UC7BIT + UCMODE_3);
 
   /* Reset UCRXIE, UCBRKIE, UCDORM, UCTXADDR, UCTXBRK */
-  UCA1CTLW0 &= ~(UCR1EIE + UCBRKIE + UCDORM + UCT1ADDR + UCT1BRK);
+  UCA1CTLW0 &= ~(UCRXEIE + UCBRKIE + UCDORM + UCTXADDR + UCTXBRK);
 
   uart_params *uparams = find_uart_settings(ubr);
 

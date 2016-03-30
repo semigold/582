@@ -2,7 +2,7 @@ CONTIKI_TARGET_SOURCEFILES = contiki-main.c
 
 ARCH=leds.c leds-arch.c \
     button-sensor.c sensors.c \
-    irq.c slip_uart1.c uart1-putchar.c
+    irq.c uart.c slip_uart1.c uart1-putchar.c
 
 
 CONTIKI_TARGET_DIRS = . dev apps net

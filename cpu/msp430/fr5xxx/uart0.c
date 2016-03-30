@@ -90,7 +90,7 @@ uart0_init(unsigned long ubr)
   UCA0CTLW0 &= ~(UCSYNC + UCPEN + UCSPB + UC7BIT + UCMODE_3);
 
   /* Reset UCRXIE, UCBRKIE, UCDORM, UCTXADDR, UCTXBRK */
-  UCA0CTLW0 &= ~(UCR0EIE + UCBRKIE + UCDORM + UCT0ADDR + UCT0BRK);
+  UCA0CTLW0 &= ~(UCRXEIE + UCBRKIE + UCDORM + UCTXADDR + UCTXBRK);
 
   uart_params *uparams = find_uart_settings(ubr);
 
