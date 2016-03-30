@@ -42,8 +42,6 @@
 
 static int (*uart1_input_handler)(unsigned char c);
 
-static volatile uint8_t transmitting;
-
 #ifdef UART1_CONF_RX_WITH_DMA
 #define RX_WITH_DMA UART1_CONF_RX_WITH_DMA
 #else /* UART1_CONF_RX_WITH_DMA */
@@ -78,7 +76,7 @@ handle_rxdma_timer(void *ptr)
 uint8_t
 uart1_active(void)
 {
-  return (UCA1STATW & UCBUSY) | transmitting;
+  return (UCA1STATW & UCBUSY)
 }
 /*---------------------------------------------------------------------------*/
 void
@@ -119,15 +117,19 @@ uart1_init(unsigned long ubr)
 
   /* RS232 */
   UCA1CTLW0 |= UCSWRST;            /* Hold peripheral in reset state */
-  UCA1CTLW0 |= UCSSEL__SMCLK;     /* CLK = SMCLK */
+  UCA1CTLW0 |= UCSSEL__SMCLK;      /* CLK = SMCLK */
 
-  ubr = (MSP430_CPU_SPEED / ubr);
-  UCA1BR0 = ubr & 0xff;
-  UCA1BR1 = (ubr >> 8) & 0xff;
-  
-  UCA1MCTLW |= UCBRS3;             /* Modulation UCBRSx = 3 */
+  /* Asynchronous mode, No parity, 1 stop bit,
+   * 8 bit character select, UART mode */
+  UCA1CTLW0 &= ~(UCSYNC + UCPEN + UCSPB + UC7BIT + UCMODE_3);
 
-  transmitting = 0;
+  /* Reset UCRXIE, UCBRKIE, UCDORM, UCTXADDR, UCTXBRK */
+  UCA1CTLW0 &= ~(UCR1EIE + UCBRKIE + UCDORM + UCT1ADDR + UCT1BRK);
+
+  uart_params *uparams = find_uart_settings(ubr);
+
+  UCA1BRW = uparams->ucaxbrw;                /* Set UCBRSx */
+  UCA1MCTLW = uparams->ucaxmctl;             /* Set UCBRSx, UCBRFx, UCOS16 */
 
   /* XXX Clear pending interrupts before enable */
   UCA1IE &= ~UCRXIFG;

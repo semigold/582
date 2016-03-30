@@ -60,6 +60,58 @@
 /* CPU target speed in Hz */
 #define F_CPU 8000000uL /* 8MHz by default */
 
+typedef struct uart_parameters {
+  unsigned int baud_rate; /* baud rate for the connection */
+  unsigned int ucaxbrw;   /* eUSCI_Ax Baud Rate Control Word Register; Holds UCBRx */
+  unsigned int ucaxmctl   /* eUSCI_Ax Modulation Control Word Register; Holds UCBRSx, UCBRFx, UCOS16 */
+} uart_params;
+
+#if F_CPU == 8000000uL
+/* Table taken from http://www.ti.com/lit/ug/slau272c/slau272c.pdf
+   the family guide for MSP430 FR57XX family. It's similar to the FR59XX family
+*/
+#define CRYSTAL_SETTINGS_LEN 7
+uart_parms crystal_settings[CRYSTAL_SETTINGS_LEN] =
+{
+  {9600  , 0x34, 0x49 << 8 | 1  << 4 | 1},
+  {19200 , 0x18, 0xB6 << 8 | 0  << 4 | 1},
+  {38400 , 0x0D, 0x84 << 8 | 0  << 4 | 1},
+  {57600 , 0x08, 0xF7 << 8 | 10 << 4 | 1},
+  {115200, 0x04, 0x55 << 8 | 5  << 4 | 1},
+  {230400, 0x02, 0xBB << 8 | 2  << 4 | 1},
+  {460800, 0x11, 0x4A << 8 | 0  << 4 | 0},
+};
+
+/* find the uart settings in the crystal_settings table using binary search */
+uart_params* find_uart_settings(unsigned long ubr);
+
+uart_params*
+find_uart_settings(unsigned long ubr)
+{
+  int low = 0;
+  int high = CRYSTAL_SETTINGS_LEN;
+
+  while(low <= high) {
+
+    int mid = low + ((high - low) / 2);
+    uart_params *up = &(crystal_settings[mid]);
+
+    if(ubr ==  up->baud_rate)
+      return up;
+    else if (ubr > up->baud_rate)
+      low = mid + 1;
+    else
+      high = mid - 1;
+  }
+  /* if value isn't found use the lowest settings */
+  return &(crystal_settings[0];
+}
+
+#else  /* F_CPU == 8000000uL */
+#error Please add a baudrate/crystal settings table for your F_CPU from the link in platform-conf.h
+#endif
+
+
 /* Our clock resolution, this is the same as Unix HZ. */
 #define CLOCK_CONF_SECOND 128UL
 

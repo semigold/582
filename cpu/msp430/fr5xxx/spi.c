@@ -64,8 +64,7 @@ spi_init(void)
   UCB0CTLW0 |= ( UCMSB | UCMST | UCSYNC | UCCKPL); 
 
   /* Set up SPI bus speed. */
-  UCB0BR0 = 0x02; // /2
-  UCB0BR1 = 0x00;
+  UCB0BRW = 0x02; // /2
 
   // Clear pending interrupts before enable!!!
   UCB0IE &= ~UCRXIFG;
