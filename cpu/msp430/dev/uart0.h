@@ -47,7 +47,7 @@
 
 void uart0_set_input(int (*input)(unsigned char c));
 void uart0_writeb(unsigned char c);
-void uart0_init(unsigned long ubr);
+void uart0_init(unsigned long);
 uint8_t uart0_active(void);
 
 #endif /* UART0_H_ */

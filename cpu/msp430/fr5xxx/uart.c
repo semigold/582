@@ -38,7 +38,7 @@
    the family guide for MSP430 FR57XX family. It's similar to the FR59XX family
 */
 #define CRYSTAL_SETTINGS_LEN 7
-   
+
 const uart_params crystal_settings[CRYSTAL_SETTINGS_LEN] =
 {
   {0x34, 0x49 << 8 | 1  << 4 | 1, 9600  },
@@ -53,7 +53,7 @@ const uart_params crystal_settings[CRYSTAL_SETTINGS_LEN] =
  /* find the uart settings in the crystal_settings table using binary search */
 
 const uart_params*
-find_uart_settings(unsigned long ubr)
+find_uart_settings(unsigned long baud)
 {
   int low = 0;
   int high = CRYSTAL_SETTINGS_LEN;
@@ -63,9 +63,9 @@ find_uart_settings(unsigned long ubr)
     int mid = low + ((high - low) / 2);
     const uart_params *up = &(crystal_settings[mid]);
 
-    if(ubr ==  up->baud_rate)
+    if(baud ==  up->baud_rate)
       return up;
-    else if (ubr > up->baud_rate)
+    else if (baud > up->baud_rate)
       low = mid + 1;
     else
       high = mid - 1;
