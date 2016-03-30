@@ -37,7 +37,8 @@
 /* Table taken from http://www.ti.com/lit/ug/slau272c/slau272c.pdf
    the family guide for MSP430 FR57XX family. It's similar to the FR59XX family
 */
-
+#define CRYSTAL_SETTINGS_LEN 7
+   
 const uart_params crystal_settings[CRYSTAL_SETTINGS_LEN] =
 {
   {0x34, 0x49 << 8 | 1  << 4 | 1, 9600  },
