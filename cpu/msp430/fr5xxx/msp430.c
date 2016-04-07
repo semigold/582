@@ -117,8 +117,9 @@ init_ports(void)
 
   P1DIR = 0xFF;
   P1OUT = 0;
-
+  #ifdef P1IE
   P1IE = 0;
+  #endif /* P1IE */
   #endif
 
   #ifdef __MSP430_HAS_PORT2_R__
@@ -127,8 +128,9 @@ init_ports(void)
 
   P2DIR = 0xFF;
   P2OUT = 0;
-
+  #ifdef P2IE
   P2IE = 0;
+  #endif /* P2IE */
   #endif
 
   #ifdef __MSP430_HAS_PORT3_R__
@@ -137,8 +139,9 @@ init_ports(void)
 
   P3DIR = 0xFF;
   P3OUT = 0;
-
+  #ifdef P3IE
   P3IE = 0;
+  #endif /* P3IE */
   #endif
 
   #ifdef __MSP430_HAS_PORT4_R__
@@ -147,8 +150,9 @@ init_ports(void)
 
   P4DIR = 0xFF;
   P4OUT = 0;
-
+  #ifdef P4IE
   P4IE = 0;
+  #endif /* P4IE */
   #endif
 
   #ifdef __MSP430_HAS_PORT5_R__
@@ -157,8 +161,9 @@ init_ports(void)
 
   P5DIR = 0xFF;
   P5OUT = 0;
-
+  #ifdef P5IE
   P5IE = 0;
+  #endif /* P5IE */
   #endif
 
   #ifdef __MSP430_HAS_PORT6_R__
@@ -167,8 +172,9 @@ init_ports(void)
 
   P6DIR = 0xFF;
   P6OUT = 0;
-
+  #ifdef P6IE
   P6IE = 0;
+  #endif /* P6IE */
   #endif
 
   #ifdef __MSP430_HAS_PORT7_R__
@@ -177,8 +183,9 @@ init_ports(void)
 
   P7DIR = 0xFF;
   P7OUT = 0;
-
+  #ifdef P7IE
   P7IE = 0;
+  #endif /* P7IE */
   #endif
 
   #ifdef __MSP430_HAS_PORT8_R__
@@ -187,8 +194,9 @@ init_ports(void)
 
   P8DIR = 0xFF;
   P8OUT = 0;
-
+  #ifdef P8IE
   P8IE = 0;
+  #endif /* P8IE */
   #endif
 
   #ifdef __MSP430_HAS_PORT9_R__
@@ -197,8 +205,9 @@ init_ports(void)
 
   P9DIR = 0xFF;
   P9OUT = 0;
-
+  #ifdef P9IE
   P9IE = 0;
+  #endif /* P9IE */
   #endif
 
   #ifdef __MSP430_HAS_PORT10_R__
@@ -207,8 +216,9 @@ init_ports(void)
 
   P10DIR = 0xFF;
   P10OUT = 0;
-
+  #ifdef P10IE
   P10IE = 0;
+  #endif /* P10IE */
   #endif
 
   #ifdef __MSP430_HAS_PORT11_R__
@@ -217,8 +227,9 @@ init_ports(void)
 
   P11DIR = 0xFF;
   P11OUT = 0;
-
+  #ifdef P11IE
   P11IE = 0;
+  #endif /* P11IE */
   #endif
 
   #ifdef __MSP430_HAS_PORTA_R__
