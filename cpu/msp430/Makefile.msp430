@@ -16,6 +16,7 @@ CONTIKI_CPU=$(CONTIKI)/cpu/msp430
 ifndef CONTIKI_CPU_FAM_DIR
  ifneq (,$(findstring msp430f1,$(MCU)))
   CONTIKI_CPU_FAM_DIR = f1xxx
+  CFLAGS += -mcpu=430x
  endif
 endif
 ifndef CONTIKI_CPU_FAM_DIR
@@ -27,12 +28,22 @@ endif
 ifndef CONTIKI_CPU_FAM_DIR
  ifneq (,$(findstring msp430fr5,$(MCU)))
   CONTIKI_CPU_FAM_DIR = fr5xxx
+  CFLAGS += -mcpu=430xv2
  endif
 endif
 #### Added for fr5xxx port
+#### Added for fr6xxx port
+ifndef CONTIKI_CPU_FAM_DIR
+ ifneq (,$(findstring msp430fr6,$(MCU)))
+  CONTIKI_CPU_FAM_DIR = fr5xxx
+  CFLAGS += -mcpu=430xv2
+ endif
+endif
+#### Added for fr6xxx port
 ifndef CONTIKI_CPU_FAM_DIR
  ifneq (,$(findstring msp430f2,$(MCU)))
   CONTIKI_CPU_FAM_DIR = f2xxx f1xxx
+  CFLAGS += -mcpu=430x
  endif
 endif
 ifndef CONTIKI_CPU_FAM_DIR
@@ -48,7 +59,7 @@ MSP430     = msp430.c clock.c leds.c leds-arch.c \
 UIPDRIVERS = 
 ELFLOADER  = elfloader.c elfloader-msp430.c symtab.c
 
-ifneq (,$(findstring msp430fr5,$(MCU)))
+ifneq (,$(findstring msp430fr,$(MCU)))
   MSP430 += fram.c
 else 
   MSP430 += flash.c
