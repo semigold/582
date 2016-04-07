@@ -128,7 +128,7 @@ uart1_init(unsigned long baud)
 
   const uart_params *uparams = find_uart_settings(baud);
 
-  UCA1BRW = uparams->ucaxbrw;                /* Set UCBRSx */
+  UCA1BRW = uparams->ucaxbrw;                /* Set UCBRx */
   UCA1MCTLW = uparams->ucaxmctl;             /* Set UCBRSx, UCBRFx, UCOS16 */
 
   /* XXX Clear pending interrupts before enable */
