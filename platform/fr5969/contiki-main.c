@@ -32,12 +32,14 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "dev/button-sensor.h"
 #include "dev/leds.h"
 #include "dev/serial-line.h"
 #include "dev/slip.h"
 #include "dev/uart1.h"
 #include "dev/watchdog.h"
 #include "dev/xmem.h"
+#include "dev/adc.h"
 #include "lib/random.h"
 #include "net/netstack.h"
 #include "net/mac/frame802154.h"
@@ -128,6 +130,8 @@ putchar(int c) {
     return c;
 }
 
+SENSORS(&button_sensor, &button_sensor2);
+
 int
 main(int argc, char **argv)
 {
@@ -139,7 +143,7 @@ main(int argc, char **argv)
   clock_init();
   leds_init();
 
-  leds_on(LEDS_RED);
+  //leds_on(LEDS_RED);
   clock_wait(2);
 
   uart1_init(115200); /* Must come before first printf */
@@ -156,11 +160,14 @@ main(int argc, char **argv)
   process_start(&etimer_process, NULL);
 
   ctimer_init();
+  
+  process_start(&sensors_process, NULL);
 
   uart1_set_input(serial_line_input_byte);
   serial_line_init();
 
   printf("Hello World\n");
+  initAdcMonitor();
 
   energest_init();
   ENERGEST_ON(ENERGEST_TYPE_CPU);
@@ -168,7 +175,7 @@ main(int argc, char **argv)
  print_processes(autostart_processes);
  autostart_start(autostart_processes);
 
-  leds_on(LEDS_GREEN);
+  //leds_on(LEDS_GREEN);
 
   /*
    * This is the scheduler loop.
