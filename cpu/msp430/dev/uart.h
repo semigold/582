@@ -42,7 +42,10 @@
 #define UART_H_
 
 #include "contiki.h"
+#include "uart0.h"
+#include "uart1.h"
 
+#if defined (MSP430_FR5739) || defined(MSP430_FR5969)
 /* struct for UART Baud rate related registers */
 struct uart_parameters {
   unsigned int ucaxbrw;   /* eUSCI_Ax Baud Rate Control Word Register; Holds UCBRx */
@@ -60,6 +63,8 @@ const uart_params* find_uart_settings(unsigned long ubr);
 
 #else  /* F_CPU == 8000000uL */
 #error Please add a baudrate/crystal settings table to uart.c for your F_CPU from the link in uart.h
-#endif
+#endif /* F_CPU == 8000000uL */
+
+#endif /* defined (__MSP430FR57XX_FAMILY__) || defined(__MSP430FR5XX_6XX_FAMILY__) */
 
 #endif /* UART_H_ */

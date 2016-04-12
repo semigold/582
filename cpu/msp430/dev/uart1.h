@@ -41,7 +41,6 @@
 #define UART1_H_
 
 #include "contiki.h"
-#include "dev/uart.h"
 
 #define UART1_BAUD2UBR(baud) ((MSP430_CPU_SPEED)/(baud))
 

@@ -35,7 +35,7 @@
 #include "dev/leds.h"
 #include "dev/serial-line.h"
 #include "dev/slip.h"
-#include "dev/uart1.h"
+#include "dev/uart.h"
 #include "dev/watchdog.h"
 #include "dev/xmem.h"
 #include "lib/random.h"
@@ -102,7 +102,20 @@ void uip_log(char *msg) { puts(msg); }
 #define NODE_ID 0x03
 #endif /* NODE_ID */
 /*---------------------------------------------------------------------------*/
-#if !PROCESS_CONF_NO_PROCESS_NAMES
+#if 1
+
+static void
+print_processes(struct process * const processes[])
+{
+  /*  const struct process * const * p = processes;*/
+  uart_printf(uart0_writeb, "Starting");
+  while(*processes != NULL) {
+    uart_printf(uart0_writeb, " %s", (*processes)->name);
+    processes++;
+  }
+  uart0_writeb('\n');
+}
+
 #endif /* !PROCESS_CONF_NO_PROCESS_NAMES */
 /*--------------------------------------------------------------------------*/
 #if NETSTACK_CONF_WITH_IPV4
@@ -110,9 +123,10 @@ void uip_log(char *msg) { puts(msg); }
 /*---------------------------------------------------------------------------*/
 
 int
-putchar(int c) {
-    uart1_writeb(c);
-    return c;
+putchar(int c)
+{
+  uart0_writeb((char)c);
+  return c;
 }
 
 int
@@ -129,7 +143,7 @@ main(int argc, char **argv)
   leds_on(LEDS_RED);
   clock_wait(2);
 
-  uart1_init(115200); /* Must come before first printf */
+  uart0_init(115200); /* Must come before first printf */
 
   clock_wait(1);
 
@@ -144,16 +158,14 @@ main(int argc, char **argv)
 
   ctimer_init();
 
-  uart1_set_input(serial_line_input_byte);
+  uart0_set_input(serial_line_input_byte);
   serial_line_init();
-
-  printf("Hello World\n");
 
   energest_init();
   ENERGEST_ON(ENERGEST_TYPE_CPU);
 
- // print_processes(autostart_processes);
- // autostart_start(autostart_processes);
+  print_processes(autostart_processes);
+  autostart_start(autostart_processes);
 
   leds_on(LEDS_GREEN);
 
@@ -162,7 +174,9 @@ main(int argc, char **argv)
    */
   watchdog_start();
   watchdog_stop(); /* Stop the wdt... */
+
   while(1) {
+    uart_printf(uart0_writeb, "Howdy Yall!\r\n");
     int r;
     do {
       /* Reset watchdog. */
@@ -175,7 +189,7 @@ main(int argc, char **argv)
      */
     int s = splhigh();          /* Disable interrupts. */
     /* uart1_active is for avoiding LPM3 when still sending or receiving */
-    if(process_nevents() != 0 || uart1_active()) {
+    if(process_nevents() != 0 || uart0_active()) {
       splx(s);                  /* Re-enable interrupts. */
     } else {
       static unsigned long irq_energest = 0;

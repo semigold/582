@@ -70,6 +70,7 @@
 
 #define HAVE_STDINT_H
 #include "msp430def.h"
+#include "dev/uart_printf.h"
 
 /* XXX Temporary place for defines that are lacking in mspgcc4's gpio.h */
 #ifdef __IAR_SYSTEMS_ICC__

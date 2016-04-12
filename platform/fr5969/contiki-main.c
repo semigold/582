@@ -102,7 +102,20 @@ void uip_log(char *msg) { puts(msg); }
 #define NODE_ID 0x03
 #endif /* NODE_ID */
 /*---------------------------------------------------------------------------*/
-#if !PROCESS_CONF_NO_PROCESS_NAMES
+#if 1
+
+static void
+print_processes(struct process * const processes[])
+{
+  /*  const struct process * const * p = processes;*/
+  printf("Starting");
+  while(*processes != NULL) {
+    printf(" %s", (*processes)->name);
+    processes++;
+  }
+  putchar('\n');
+}
+
 #endif /* !PROCESS_CONF_NO_PROCESS_NAMES */
 /*--------------------------------------------------------------------------*/
 #if NETSTACK_CONF_WITH_IPV4
@@ -152,8 +165,8 @@ main(int argc, char **argv)
   energest_init();
   ENERGEST_ON(ENERGEST_TYPE_CPU);
 
- // print_processes(autostart_processes);
- // autostart_start(autostart_processes);
+ print_processes(autostart_processes);
+ autostart_start(autostart_processes);
 
   leds_on(LEDS_GREEN);
 

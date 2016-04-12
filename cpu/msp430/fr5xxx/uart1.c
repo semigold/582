@@ -36,7 +36,7 @@
 #include "contiki.h"
 #include <stdlib.h>
 #include "sys/energest.h"
-#include "dev/uart1.h"
+#include "dev/uart.h"
 #include "dev/watchdog.h"
 #include "isr_compat.h"
 
@@ -106,13 +106,12 @@ uart1_writeb(unsigned char c)
 void
 uart1_init(unsigned long baud)
 {
-
   // Configure GPIO
 
   /* P2DIR value is controlled by eUSCI_A1 module according to schematics.
    * don't worry about it's value */
 
-  P2SEL1 |= BIT5 | BIT6;  /* P2.5,6 = USCI_A1 TXD/RXD */
+  P2SEL1 |= (BIT5 | BIT6);  /* P2.5,6 = USCI_A1 TXD/RXD */
   P2SEL0 &= ~(BIT5| BIT6);
 
   /* RS232 */

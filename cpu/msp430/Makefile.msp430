@@ -22,6 +22,7 @@ endif
 ifndef CONTIKI_CPU_FAM_DIR
  ifneq (,$(findstring msp430f5,$(MCU)))
   CONTIKI_CPU_FAM_DIR = f5xxx
+  CFLAGS += -mcpu=430x
  endif
 endif
 #### Added for fr5xxx port
