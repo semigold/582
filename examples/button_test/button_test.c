@@ -38,11 +38,11 @@ PROCESS_THREAD(blink_process, ev, data)
         
         leds_toggle(LEDS_GREEN);
 
-        PROCESS_WAIT_EVENT_UNTIL((ev==sensors_event) && (data == &button_sensor2));
+        //PROCESS_WAIT_EVENT_UNTIL((ev==sensors_event) && (data == &button_sensor2));
         //PROCESS_WAIT_EVENT_UNTIL(ev==sensors_event);
         //PROCESS_WAIT_EVENT();
         
-        leds_toggle(LEDS_RED);
+        //leds_toggle(LEDS_YELLOW);
     }
     
 exit:
