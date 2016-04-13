@@ -32,6 +32,7 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "dev/button-sensor.h"
 #include "dev/leds.h"
 #include "dev/serial-line.h"
 #include "dev/slip.h"
@@ -129,6 +130,8 @@ putchar(int c)
   return c;
 }
 
+SENSORS(&button_sensor, &button_sensor2);
+
 int
 main(int argc, char **argv)
 {
@@ -157,6 +160,8 @@ main(int argc, char **argv)
   process_start(&etimer_process, NULL);
 
   ctimer_init();
+  
+  process_start(&sensors_process, NULL);
 
   uart0_set_input(serial_line_input_byte);
   serial_line_init();

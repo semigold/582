@@ -1,7 +1,7 @@
 CONTIKI_TARGET_SOURCEFILES = contiki-main.c 
 
 ARCH=leds.c leds-arch.c \
-    button-sensor.c sensors.c irq.c \
+    s1_sensor.c s2_sensor.c  irq.c \
     uart.c slip_uart1.c uart1-putchar.c \
     uart_printf.c
 
