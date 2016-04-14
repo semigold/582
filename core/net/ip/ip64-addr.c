@@ -33,8 +33,10 @@
 
 #include <stdio.h>
 #include <string.h>
-
+#ifdef printf
+#undef printf
 #define printf(...)
+#endif
 /*---------------------------------------------------------------------------*/
 void
 ip64_addr_copy4(uip_ip4addr_t *dest, const uip_ip4addr_t *src)

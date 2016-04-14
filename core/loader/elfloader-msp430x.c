@@ -751,7 +751,7 @@ elfloader_arch_relocate(int fd, unsigned int sectionoffset,
     /* src(15:0) located just after opcode */
     cfs_seek(fd, sectionoffset + rela->r_offset, CFS_SEEK_SET);
     cfs_read(fd, instr, 2);
-    instr[1] = (int)(instr[1]) & 0xf0 | (((long int)addr >> 8) & 0x0f00);
+    instr[1] = ((int)(instr[1]) & 0xf0) | (((intptr_t)addr >> 8) & 0x0f00);
     instr[0] = (int)(instr[0]) & 0xff;
     cfs_seek(fd, sectionoffset + rela->r_offset, CFS_SEEK_SET);
     cfs_write(fd, instr, 2);
@@ -765,7 +765,7 @@ elfloader_arch_relocate(int fd, unsigned int sectionoffset,
     cfs_seek(fd, sectionoffset + rela->r_offset, CFS_SEEK_SET);
     cfs_read(fd, instr, 2);
     instr[1] = (int)(instr[1]) & 0xff;
-    instr[0] = (int)(instr[0]) & 0xf0 | (((long int)addr >> 16) & 0x000f);
+    instr[0] = ((int)(instr[0]) & 0xf0) | (((intptr_t)addr >> 16) & 0x000f);
     cfs_seek(fd, sectionoffset + rela->r_offset, CFS_SEEK_SET);
     cfs_write(fd, instr, 2);
     cfs_write(fd, (char *)&addr, 2);
@@ -779,8 +779,8 @@ elfloader_arch_relocate(int fd, unsigned int sectionoffset,
     cfs_seek(fd, sectionoffset + rela->r_offset, CFS_SEEK_SET);
     cfs_read(fd, instr, 2);
     /* 4 most-significant bits */
-    instr[1] = (int)(instr[1]) & 0xf8 | (((long int)addr >> 9) & 0x0780);
-    instr[0] = (int)(instr[0]) & 0x7f | (((long int)addr >> 9) & 0x0780);
+    instr[1] = ((int)(instr[1]) & 0xf8) | (((intptr_t)addr >> 9) & 0x0780);
+    instr[0] = ((int)(instr[0]) & 0x7f) | (((intptr_t)addr >> 9) & 0x0780);
     cfs_seek(fd, sectionoffset + rela->r_offset, CFS_SEEK_SET);
     cfs_write(fd, instr, 2);
     /* 16 least-significant bits */
@@ -796,7 +796,7 @@ elfloader_arch_relocate(int fd, unsigned int sectionoffset,
     cfs_seek(fd, sectionoffset + rela->r_offset, CFS_SEEK_SET);
     cfs_read(fd, instr, 2);
     instr[1] = (int)(instr[1]) & 0xff;
-    instr[0] = (int)(instr[0]) & 0xf0 | (((long int)addr >> 16) & 0x000f);
+    instr[0] = ((int)(instr[0]) & 0xf0) | (((intptr_t)addr >> 16) & 0x000f);
     cfs_seek(fd, sectionoffset + rela->r_offset, CFS_SEEK_SET);
     cfs_write(fd, instr, 2);
     cfs_seek(fd, sectionoffset + rela->r_offset + 0x04, CFS_SEEK_SET);
@@ -811,7 +811,7 @@ elfloader_arch_relocate(int fd, unsigned int sectionoffset,
     cfs_seek(fd, sectionoffset + rela->r_offset, CFS_SEEK_SET);
     cfs_read(fd, instr, 2);
     instr[1] = (int)(instr[1]) & 0xff;
-    instr[0] = (int)(instr[0]) & 0xf0 | (((long int)addr >> 16) & 0x000f);
+    instr[0] = ((int)(instr[0]) & 0xf0) | (((intptr_t)addr >> 16) & 0x000f);
     cfs_seek(fd, sectionoffset + rela->r_offset, CFS_SEEK_SET);
     cfs_write(fd, instr, 2);
     cfs_seek(fd, sectionoffset + rela->r_offset + 0x06, CFS_SEEK_SET);
