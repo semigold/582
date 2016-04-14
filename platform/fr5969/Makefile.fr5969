@@ -39,7 +39,7 @@ ifdef TI-GCC
 CFLAGS += -I ~/ti/gcc/include
 ifdef CTPL
 CFLAGS += -DCTPL_STACK_SIZE=160
-LDFLAGS += -T /mnt/hgfs/582/platform/fr5969/msp430fr5969.ld
+LDFLAGS += -T $(CONTIKI)/platform/fr5969/msp430fr5969.ld
 ASFLAGS += -I ~/ti/gcc/include -DCTPL_STACK_SIZE=160
 else
 LDFLAGS += -L ~/ti/gcc/include
