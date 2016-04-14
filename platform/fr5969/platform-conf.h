@@ -71,6 +71,7 @@
 #define HAVE_STDINT_H
 #include "msp430def.h"
 #include "dev/uart_printf.h"
+#include "ctpl/ctpl.h"
 
 /* reduce code size by using custom uart_printf */
 #define printf uart_printf

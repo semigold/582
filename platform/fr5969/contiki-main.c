@@ -131,6 +131,29 @@ putchar(int c) {
 }
 #endif
 
+/*
+ * This function will be called before main and initialization of variables.
+ * The ctpl_init() function must be called at the start to enable the compute
+ * through power loss library. If your application already declares this
+ * function you can remove this file and add the call to ctpl_init() at the
+ * start of your function.
+ */
+#if defined(__TI_COMPILER_VERSION__)
+int _system_pre_init(void)
+#elif defined(__IAR_SYSTEMS_ICC__)
+int __low_level_init(void)
+#elif defined(__GNUC__)
+static void __attribute__((naked, section(".crt_0001disable_watchdog"), used)) __low_level_init(void)
+#endif
+{
+    /* Initialize ctpl library */
+    ctpl_init();
+
+#ifndef __GNUC__
+    return 1;
+#endif
+}
+
 SENSORS(&button_sensor, &button_sensor2);
 
 int
@@ -144,7 +167,7 @@ main(int argc, char **argv)
   clock_init();
   leds_init();
 
-  //leds_on(LEDS_RED);
+  //leds_on(LEDS_GREEN);
   clock_wait(2);
 
   uart1_init(115200); /* Must come before first printf */

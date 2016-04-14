@@ -1,13 +1,21 @@
 CONTIKI_TARGET_SOURCEFILES = contiki-main.c 
 
-ARCH=leds.c leds-arch.c \
-    s1_sensor.c s2_sensor.c \
-	sensors.c irq.c uart.c \
-	slip_uart1.c uart1-putchar.c \
-	adc.c uart_printf.c
+ARCH=leds.c leds-arch.c          \
+    s1_sensor.c s2_sensor.c      \
+	  sensors.c irq.c uart.c       \
+	  slip_uart1.c uart1-putchar.c \
+	  adc.c uart_printf.c
 
+CTPL=ctpl.c ctpl_msp430fr5969.c   \
+    ctpl_cs.c ctpl_low_level.S    \
+    ctpl_mpu.c ctpl_mpy32.c       \
+    ctpl_port.c ctpl_rc.c         \
+    ctpl_rtc_c.c  ctpl_wdt_a.c    \
+    ctpl_fram.c ctpl_mpu_fr57xx.c \
+    ctpl_pmm.c  ctpl_port_int.c   \
+    ctpl_rtc_b.c  ctpl_sys.c
 
-CONTIKI_TARGET_DIRS = . dev apps net
+CONTIKI_TARGET_DIRS = . dev apps net ctpl
 ifndef CONTIKI_TARGET_MAIN
 CONTIKI_TARGET_MAIN = contiki-main.c
 endif
@@ -18,7 +26,7 @@ else
 SMALL=1
 endif
 
-CONTIKI_TARGET_SOURCEFILES += $(ARCH) $(UIPDRIVERS)
+CONTIKI_TARGET_SOURCEFILES += $(ARCH) $(UIPDRIVERS) $(CTPL)
 
 MCU=msp430fr5969
 
@@ -29,7 +37,13 @@ TARGET_MEMORY_MODEL=large
 
 ifdef TI-GCC
 CFLAGS += -I ~/ti/gcc/include
+ifdef CTPL
+CFLAGS += -DCTPL_STACK_SIZE=160
+LDFLAGS += -T /mnt/hgfs/582/platform/fr5969/msp430fr5969.ld
+ASFLAGS += -I ~/ti/gcc/include -DCTPL_STACK_SIZE=160
+else
 LDFLAGS += -L ~/ti/gcc/include
+endif
 endif
 
 include $(CONTIKI)/cpu/msp430/Makefile.msp430

@@ -17,6 +17,7 @@ ifndef CONTIKI_CPU_FAM_DIR
  ifneq (,$(findstring msp430f1,$(MCU)))
   CONTIKI_CPU_FAM_DIR = f1xxx
   CFLAGS += -mcpu=430x
+  ASFLAGS += -mcpu=430x
  endif
 endif
 ifndef CONTIKI_CPU_FAM_DIR
@@ -30,6 +31,7 @@ ifndef CONTIKI_CPU_FAM_DIR
  ifneq (,$(findstring msp430fr5,$(MCU)))
   CONTIKI_CPU_FAM_DIR = fr5xxx
   CFLAGS += -mcpu=430xv2
+  ASFLAGS += -mcpu=430xv2
  endif
 endif
 #### Added for fr5xxx port
@@ -38,6 +40,7 @@ ifndef CONTIKI_CPU_FAM_DIR
  ifneq (,$(findstring msp430fr6,$(MCU)))
   CONTIKI_CPU_FAM_DIR = fr5xxx
   CFLAGS += -mcpu=430xv2
+  ASFLAGS += -mcpu=430x
  endif
 endif
 #### Added for fr6xxx port
@@ -45,6 +48,7 @@ ifndef CONTIKI_CPU_FAM_DIR
  ifneq (,$(findstring msp430f2,$(MCU)))
   CONTIKI_CPU_FAM_DIR = f2xxx f1xxx
   CFLAGS += -mcpu=430x
+  ASFLAGS += -mcpu=430x
  endif
 endif
 ifndef CONTIKI_CPU_FAM_DIR
@@ -157,7 +161,7 @@ ifdef TI-GCC
 GCC      = 1
 CC       = msp430-elf-gcc
 LD       = msp430-elf-gcc
-AS       = msp430-elf-as
+AS       = msp430-elf-gcc
 AR       = msp430-elf-ar
 NM       = msp430-elf-nm
 OBJCOPY  = msp430-elf-objcopy
@@ -173,6 +177,7 @@ ifdef CPU_HAS_MSP430X
  ifeq ($(TARGET_MEMORY_MODEL),large)
   CFLAGS += -mcode-region=upper -mdata-region=upper -mlarge
   LDFLAGS += -mcode-region=upper -mdata-region=upper -mlarge
+  ASFLAGS += -mcode-region=upper -mdata-region=upper -mlarge
  else
   CFLAGS += -ffunction-sections -fdata-sections -mcode-region=either -msmall
   LDFLAGS += -msmall -Wl,-gc-sections
@@ -185,7 +190,7 @@ endif
 
 CFLAGS  += -Os -fno-strict-aliasing
 LDFLAGS += -mmcu=$(CC_MCU) -Wl,-Map=contiki-$(TARGET).map
-
+ASFLAGS += -D_GNU_ASSEMBLER_ -U__STDC__ -mmcu=$(CC_MCU)
 ### These flags can reduce the code size and RAM usage with up to 10%
 ifeq ($(SMALL),1)
 CFLAGS += -ffunction-sections
@@ -264,6 +269,10 @@ CFLAGS  += $(CFLAGSNO)
 PROJECT_OBJECTFILES += ${addprefix $(OBJECTDIR)/,$(CONTIKI_TARGET_MAIN:.c=.o)}
 
 ### Compilation rules
+CUSTOM_RULE_S_TO_OBJECTDIR_O=1
+$(OBJECTDIR)/%.o: %.S | $(OBJECTDIR)
+	$(TRACE_AS)
+	$(Q)$(AS) $(ASFLAGS) -c $< -o $@
 
 %-stripped.o: %.c
 	$(CC) $(CFLAGS) -c $< -o $@
