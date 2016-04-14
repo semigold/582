@@ -151,8 +151,49 @@ CUSTOM_RULE_C_TO_CO = 1
 	$(Q)$(CC) $(CFLAGS) -DAUTOSTART_ENABLE $< -o $@
 
 AROPTS = -o
-
 else
+ifdef TI-GCC
+
+GCC      = 1
+CC       = msp430-elf-gcc
+LD       = msp430-elf-gcc
+AS       = msp430-elf-as
+AR       = msp430-elf-ar
+NM       = msp430-elf-nm
+OBJCOPY  = msp430-elf-objcopy
+STRIP    = msp430-elf-strip
+BSL      = msp430-elf-bsl
+
+ifndef CC_MCU
+ CC_MCU := $(MCU)
+endif
+
+### Checks for compiler version to enable 20-bit support
+ifdef CPU_HAS_MSP430X
+ ifeq ($(TARGET_MEMORY_MODEL),large)
+  CFLAGS += -mcode-region=upper -mdata-region=upper -mlarge
+  LDFLAGS += -mcode-region=upper -mdata-region=upper -mlarge
+ else
+  CFLAGS += -ffunction-sections -fdata-sections -mcode-region=either -msmall
+  LDFLAGS += -msmall -Wl,-gc-sections
+ endif
+endif
+
+ifndef CFLAGSNO
+CFLAGSNO = -Wall -mmcu=$(CC_MCU) $(CFLAGSWERROR)
+endif
+
+CFLAGS  += -Os -fno-strict-aliasing
+LDFLAGS += -mmcu=$(CC_MCU) -Wl,-Map=contiki-$(TARGET).map
+
+### These flags can reduce the code size and RAM usage with up to 10%
+ifeq ($(SMALL),1)
+CFLAGS += -ffunction-sections
+# CFLAGS += -fdata-sections
+LDFLAGS += -Wl,--gc-sections,--undefined=_reset_vector__,--undefined=InterruptVectors,--undefined=_copy_data_init__,--undefined=_clear_bss_init__,--undefined=_end_of_init__
+endif # SMALL
+
+else # TI-GCC
 
 GCC      = 1
 CC       = msp430-gcc
@@ -215,7 +256,7 @@ CFLAGS += -ffunction-sections
 # CFLAGS += -fdata-sections
 LDFLAGS += -Wl,--gc-sections,--undefined=_reset_vector__,--undefined=InterruptVectors,--undefined=_copy_data_init__,--undefined=_clear_bss_init__,--undefined=_end_of_init__
 endif # SMALL
-
+endif # TI-GCC
 endif # IAR
 
 CFLAGS  += $(CFLAGSNO)

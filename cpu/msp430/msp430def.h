@@ -30,10 +30,12 @@
 #ifndef MSP430DEF_H
 #define MSP430DEF_H
 
+#include <msp430.h>
+ 
 #ifdef __IAR_SYSTEMS_ICC__
 #include <intrinsics.h>
 #include <in430.h>
-#include <msp430.h>
+
 #define dint() __disable_interrupt()
 #define eint() __enable_interrupt()
 #define __MSP430__ 1
@@ -42,7 +44,7 @@
 #else /* __IAR_SYSTEMS_ICC__ */
 
 #ifdef __MSPGCC__
-#include <msp430.h>
+
 #include <legacymsp430.h>
 #elif defined(__MSP430_HEADER_VERSION__) && __MSP430_HEADER_VERSION__ > 1073
 /* The last MSP430MCU update https://sourceforge.net/projects/mspgcc/
@@ -51,7 +53,7 @@
 */
 #define dint() __disable_interrupt()
 #define eint() __enable_interrupt()
-#include <msp430.h>
+
 #include <signal.h>
 
 #else /* __MSPGCC __ */

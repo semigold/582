@@ -40,7 +40,7 @@ void initAdcMonitor(void)
     ADC12IER2 = ADC12HIIE;
     ADC12CTL0 |= ADC12ENC;
 
-    fram_location = 0xa1c0;
+    fram_location = (uint32_t*)0xa1c0;
     if (*fram_location == 100) {
         //P1OUT |= BIT0;
         leds_on(LEDS_GREEN);
@@ -81,7 +81,7 @@ ISR(ADC12, power_loss)
             stopAdcMonitor();
             //ctpl_enterShutdown(CTPL_SHUTDOWN_TIMEOUT_64_MS);
 
-            uint32_t *fram_location = 0xa1c0;
+            uint32_t *fram_location = (uint32_t*)0xa1c0;
             if (*fram_location == 100) {
                 *fram_location = 0;
             }

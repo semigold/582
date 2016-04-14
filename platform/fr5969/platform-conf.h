@@ -70,6 +70,10 @@
 
 #define HAVE_STDINT_H
 #include "msp430def.h"
+#include "dev/uart_printf.h"
+
+/* reduce code size by using custom uart_printf */
+#define printf uart_printf
 
 /* XXX Temporary place for defines that are lacking in mspgcc4's gpio.h */
 #ifdef __IAR_SYSTEMS_ICC__
@@ -89,7 +93,7 @@ sfrb(P1SEL2, P1SEL2_);
 /* Types for clocks and uip_stats */
 typedef unsigned short uip_stats_t;
 typedef unsigned long clock_time_t;
-typedef unsigned long off_t;
+#define off_t unsigned long
 
 /*
  * Definitions below are dictated by the hardware and not really

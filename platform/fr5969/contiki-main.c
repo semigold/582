@@ -123,12 +123,13 @@ print_processes(struct process * const processes[])
 #if NETSTACK_CONF_WITH_IPV4
 #endif /* NETSTACK_CONF_WITH_IPV4 */
 /*---------------------------------------------------------------------------*/
-
+#if defined(__MSP430_HEADER_VERSION__) && __MSP430_HEADER_VERSION__ < 1074
 int
 putchar(int c) {
     uart1_writeb(c);
     return c;
 }
+#endif
 
 SENSORS(&button_sensor, &button_sensor2);
 
@@ -147,7 +148,7 @@ main(int argc, char **argv)
   clock_wait(2);
 
   uart1_init(115200); /* Must come before first printf */
-
+  set_uart_out(uart1_writeb);
   clock_wait(1);
 
   rtimer_init();

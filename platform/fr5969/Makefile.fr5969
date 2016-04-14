@@ -4,7 +4,7 @@ ARCH=leds.c leds-arch.c \
     s1_sensor.c s2_sensor.c \
 	sensors.c irq.c uart.c \
 	slip_uart1.c uart1-putchar.c \
-	adc.c 
+	adc.c uart_printf.c
 
 
 CONTIKI_TARGET_DIRS = . dev apps net
@@ -24,6 +24,13 @@ MCU=msp430fr5969
 
 # Platform has a MSP430X MCU with 20-bit support
 CPU_HAS_MSP430X=1
+TI-GCC=1
+TARGET_MEMORY_MODEL=large
+
+ifdef TI-GCC
+CFLAGS += -I ~/ti/gcc/include
+LDFLAGS += -L ~/ti/gcc/include
+endif
 
 include $(CONTIKI)/cpu/msp430/Makefile.msp430
 
