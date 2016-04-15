@@ -36,13 +36,13 @@ TI-GCC=1
 TARGET_MEMORY_MODEL=large
 
 ifdef TI-GCC
-CFLAGS += -I ~/ti/gcc/include
+CFLAGS += -I ~/ti2/gcc/include
 ifdef CTPL
 CFLAGS += -DCTPL_STACK_SIZE=160
-LDFLAGS += -T $(CONTIKI)/platform/fr5969/msp430fr5969.ld
-ASFLAGS += -I ~/ti/gcc/include -DCTPL_STACK_SIZE=160
+LDFLAGS += -L $(CONTIKI)/platform/fr5969/ldscripts/
+ASFLAGS += -I ~/ti2/gcc/include -DCTPL_STACK_SIZE=160
 else
-LDFLAGS += -L ~/ti/gcc/include
+LDFLAGS += -L ~/ti2/gcc/include
 endif
 endif
 

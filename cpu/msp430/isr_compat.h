@@ -55,10 +55,21 @@
 
 /* 2012-03-02: minor update to support IAR version 4 and 5 */
 
+/*
+#define __interrupt(vec) __attribute__((__interrupt__(vec)))
+with 
+#define __interrupt __attribute__((__interrupt__))
+#define __interrupt_vec(vec) __attribute__((interrupt(vec)))
+Impact: Old #define __interrupt(vec) __attribute__((__interrupt__(vec))) removed.
+Please update your macro by the new one: change __interrupt(vec) by __interrupt_vec(vec)
+*/
 /* A tricky #define to stringify _Pragma parameters */
 #define __PRAGMA__(x) _Pragma(#x)
 
-#if defined(__MSP430_HEADER_VERSION__) && __MSP430_HEADER_VERSION__ > 1073
+#if defined(__MSP430_HEADER_VERSION__) && __MSP430_HEADER_VERSION__ > 1088
+#define ISR(a,b) __attribute__((interrupt(a ## _VECTOR))) void b(void)
+
+#elif defined(__MSP430_HEADER_VERSION__) && __MSP430_HEADER_VERSION__ > 1073
 /* The last MSP430MCU update https://sourceforge.net/projects/mspgcc/
   was from 20130321, anything greater than 1073 is from the TI backed
   compiler and has some changes

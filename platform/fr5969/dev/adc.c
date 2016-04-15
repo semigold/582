@@ -3,10 +3,10 @@
 
 #define ADC_MONITOR_FREQUENCY 8000
 #define ADC_MONITOR_THRESHOLD 3.0
-
+uint32_t fram_location = 0;
 void initAdcMonitor(void)
 {
-    uint32_t *fram_location;
+
     //P1DIR |= BIT0;
     //P1OUT &= ~BIT0;
     /* Initialize timer for ADC trigger. */
@@ -40,8 +40,7 @@ void initAdcMonitor(void)
     ADC12IER2 = ADC12HIIE;
     ADC12CTL0 |= ADC12ENC;
 
-    fram_location = (uint32_t*)0xa1c0;
-    if (*fram_location == 100) {
+    if (fram_location == 100) {
         //P1OUT |= BIT0;
         leds_on(LEDS_GREEN);
     }
@@ -79,14 +78,13 @@ ISR(ADC12, power_loss)
         case 8:                // Vector  8: Window comparator low side
             /* Stop the ADC monitor and enter device shutdown with 64ms timeout. */
             stopAdcMonitor();
-            //ctpl_enterShutdown(CTPL_SHUTDOWN_TIMEOUT_64_MS);
+            ctpl_enterShutdown(CTPL_SHUTDOWN_TIMEOUT_64_MS);
 
-            uint32_t *fram_location = (uint32_t*)0xa1c0;
-            if (*fram_location == 100) {
-                *fram_location = 0;
+            if (fram_location == 100) {
+                fram_location = 0;
             }
             else {
-                *fram_location = 100;
+                fram_location = 100;
             }
 
 
