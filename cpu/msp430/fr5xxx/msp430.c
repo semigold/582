@@ -388,19 +388,22 @@ splhigh_(void)
 #endif
   return sr & GIE;		/* Ignore other sr bits. */
 }
+
 /*---------------------------------------------------------------------------*/
-#ifdef __IAR_SYSTEMS_ICC__
+#if defined(__TI_COMPILER_VERSION__)
+int _system_pre_init(void)
+#elif defined(__IAR_SYSTEMS_ICC__)
 int __low_level_init(void)
-{
-  /* turn off watchdog so that C-init will run */
-  WDTCTL = WDTPW + WDTHOLD;
-  /*
-   * Return value:
-   *
-   *  1 - Perform data segment initialization.
-   *  0 - Skip data segment initialization.
-   */
-  return 1;
-}
+#elif defined(__GNUC__)
+static void __attribute__((naked, section(".crt_0001disable_watchdog"), used)) __low_level_init(void)
 #endif
+{
+
+    /* Initialize ctpl library */
+    ctpl_init();
+
+#ifndef __GNUC__
+    return 1;
+#endif
+}
 /*---------------------------------------------------------------------------*/
