@@ -188,7 +188,7 @@ ifndef CFLAGSNO
 CFLAGSNO = -Wall -mmcu=$(CC_MCU) $(CFLAGSWERROR)
 endif
 
-CFLAGS  += -Os -fno-strict-aliasing
+CFLAGS  += -Os -fno-strict-aliasing -mmcu=$(CC_MCU)
 LDFLAGS += -mmcu=$(CC_MCU) -Wl,-Map=contiki-$(TARGET).map
 ASFLAGS += -D_GNU_ASSEMBLER_ -U__STDC__ -mmcu=$(CC_MCU)
 ### These flags can reduce the code size and RAM usage with up to 10%
@@ -252,7 +252,7 @@ endif
 ifndef CFLAGSNO
 CFLAGSNO = -Wall -mmcu=$(CC_MCU) $(CFLAGSWERROR)
 endif
-CFLAGS  += -Os -fno-strict-aliasing
+CFLAGS  += -Os -fno-strict-aliasing -mmcu=$(mmcu)
 LDFLAGS += -mmcu=$(CC_MCU) -Wl,-Map=contiki-$(TARGET).map
 
 ### These flags can reduce the code size and RAM usage with up to 10%

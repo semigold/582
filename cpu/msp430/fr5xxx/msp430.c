@@ -399,6 +399,7 @@ static void __attribute__((naked, section(".crt_0001disable_watchdog"), used)) _
 #endif
 {
 
+    WDTCTL = WDTPW | WDTHOLD;               // Stop watchdog timer
     /* Initialize ctpl library */
     ctpl_init();
 

@@ -18,7 +18,7 @@
 
 ; Return statement for different code models
 .macro retx
-#ifdef __LARGE_CODE_MODEL__
+#ifdef __MSP430X_LARGE__
         reta
 #else
         ret
