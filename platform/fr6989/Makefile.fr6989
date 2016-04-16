@@ -1,0 +1,71 @@
+CONTIKI_TARGET_SOURCEFILES = contiki-main.c 
+
+ARCH=leds.c leds-arch.c          \
+    s1_sensor.c s2_sensor.c      \
+	sensors.c irq.c uart.c       \
+	slip_uart1.c uart1-putchar.c \
+	adc.c uart_printf.c          \
+    LCD_Launchpad.c
+
+CTPL=ctpl.c ctpl_msp430fr6989.c   \
+    ctpl_cs.c ctpl_low_level.S    \
+    ctpl_mpu.c ctpl_mpy32.c       \
+    ctpl_port.c ctpl_rc.c         \
+    ctpl_rtc_c.c  ctpl_wdt_a.c    \
+    ctpl_fram.c ctpl_mpu_fr57xx.c \
+    ctpl_pmm.c  ctpl_port_int.c   \
+    ctpl_rtc_b.c  ctpl_sys.c
+
+CONTIKI_TARGET_DIRS = . dev apps net ctpl
+ifndef CONTIKI_TARGET_MAIN
+CONTIKI_TARGET_MAIN = contiki-main.c
+endif
+
+ifdef IAR
+CFLAGS += -D__MSP430FR6989__=1 -e --vla -Ohz --multiplier=32 --multiplier_location=4C0 --hw_workaround=CPU40 --core=430X --double=32
+else
+SMALL=1
+endif
+
+CONTIKI_TARGET_SOURCEFILES += $(ARCH) $(UIPDRIVERS) $(CTPL)
+
+MCU=msp430fr6989
+
+# Platform has a MSP430X MCU with 20-bit support
+CPU_HAS_MSP430X=1
+TI-GCC=1
+TARGET_MEMORY_MODEL=large
+
+ifdef TI-GCC
+CFLAGS += -I ~/ti2/gcc/include
+ifdef CTPL
+CFLAGS += -DCTPL_STACK_SIZE=160
+LDFLAGS += -L $(CONTIKI)/platform/fr6989/ldscripts/
+ASFLAGS += -I ~/ti2/gcc/include -DCTPL_STACK_SIZE=160
+else
+LDFLAGS += -L ~/ti2/gcc/include
+endif
+endif
+
+include $(CONTIKI)/cpu/msp430/Makefile.msp430
+
+ifdef IAR
+LDFLAGSNO += -xm "$(IAR_PATH)/lib/dlib/dl430xsfn.r43" -f "$(IAR_PATH)/config/lnk430fr6989.xcl"
+LDFLAGS += $(LDFLAGSNO) -Felf -yn
+endif
+
+contiki-$(TARGET).a: ${addprefix $(OBJECTDIR)/,symbols.o}
+#	$(AR) rcf $@ $^
+
+%.hex: %.ihex
+	mv $< $@
+
+%.upload: %.hex
+	MSP430Flasher -n $(MCU) -e ERASE_MAIN -w $< -v -z [VCC]
+
+%.upload-clean: %.hex
+	MSP430Flasher -n $(MCU) -w $< -v -z [VCC]
+
+MODULES += core/net core/net/mac \
+           core/net/mac/contikimac \
+           core/net/llsec \
