@@ -178,7 +178,7 @@ main(int argc, char **argv)
 
   leds_on(LEDS_GREEN);
   LCD_init();
-  LCD_displayScrollText("Hello World BITCH", 1000);
+  LCD_displayScrollText("Hello World", 1000);
   /*
    * This is the scheduler loop.
    */
