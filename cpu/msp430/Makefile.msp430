@@ -29,7 +29,7 @@ endif
 #### Added for fr5xxx port
 ifndef CONTIKI_CPU_FAM_DIR
  ifneq (,$(findstring msp430fr5,$(MCU)))
-  CONTIKI_CPU_FAM_DIR = fr5xxx
+  CONTIKI_CPU_FAM_DIR = fr5xx_6xx
   CFLAGS += -mcpu=430xv2
   ASFLAGS += -mcpu=430xv2
  endif
@@ -38,7 +38,7 @@ endif
 #### Added for fr6xxx port
 ifndef CONTIKI_CPU_FAM_DIR
  ifneq (,$(findstring msp430fr6,$(MCU)))
-  CONTIKI_CPU_FAM_DIR = fr5xxx
+  CONTIKI_CPU_FAM_DIR = fr5xx_6xx
   CFLAGS += -mcpu=430xv2
   ASFLAGS += -mcpu=430x
  endif

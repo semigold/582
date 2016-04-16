@@ -46,7 +46,7 @@ AUTOSTART_PROCESSES(&persistent_blink_process);
 /*---------------------------------------------------------------------------*/
 int __attribute__((section(".persistent")))i = 1;
 
-PROCESS_THREAD(hello_world_process, ev, data)
+PROCESS_THREAD(persistent_blink_process, ev, data)
 {
   PROCESS_BEGIN();
 
@@ -55,7 +55,7 @@ PROCESS_THREAD(hello_world_process, ev, data)
   P1OUT &= ~BIT0;
   while (1) {
       for (; i < 5; i++) {
-          for (j = i; j > 0; j--) {
+          for (int j = i; j > 0; j--) {
               /* Blink the LED for 0.1s and delay for 0.2s */
               P1OUT |= BIT0;
               __delay_cycles(F_CPU/8);
