@@ -36,7 +36,7 @@
 #include "dev/leds.h"
 #include "dev/serial-line.h"
 #include "dev/slip.h"
-#include "dev/uart1.h"
+#include "dev/uart.h"
 #include "dev/watchdog.h"
 #include "dev/xmem.h"
 #include "dev/adc.h"
@@ -147,8 +147,8 @@ main(int argc, char **argv)
   //leds_on(LEDS_RED);
   clock_wait(2);
 
-  uart1_init(115200); /* Must come before first printf */
-  set_uart_out(uart1_writeb);
+  uart0_init(115200); /* Must come before first printf */
+  set_uart_out(uart0_writeb);
   clock_wait(1);
 
   rtimer_init();
@@ -164,7 +164,7 @@ main(int argc, char **argv)
   
   process_start(&sensors_process, NULL);
 
-  uart1_set_input(serial_line_input_byte);
+  uart0_set_input(serial_line_input_byte);
   serial_line_init();
 
   printf("Hello World\n");
@@ -184,6 +184,7 @@ main(int argc, char **argv)
   watchdog_start();
   watchdog_stop(); /* Stop the wdt... */
   while(1) {
+    printf("Howdt World\r\n");
     int r;
     do {
       /* Reset watchdog. */
@@ -196,7 +197,7 @@ main(int argc, char **argv)
      */
     int s = splhigh();          /* Disable interrupts. */
     /* uart1_active is for avoiding LPM3 when still sending or receiving */
-    if(process_nevents() != 0 || uart1_active()) {
+    if(process_nevents() != 0 || uart0_active()) {
       splx(s);                  /* Re-enable interrupts. */
     } else {
       static unsigned long irq_energest = 0;
