@@ -140,6 +140,7 @@ uart_printf(const char *format, ...)
         case 'c':// Char
           uputc(va_arg(a, int));
         break;
+        case 'd':
         case 'i':// 16 bit Integer
         case 'u':// 16 bit Unsigned
           i = va_arg(a, int);
