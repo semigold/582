@@ -177,16 +177,13 @@ int main(void)
 
   process_start(&sensors_process, NULL);
 
-  //uart0_set_input(serial_line_input_byte);
-  //serial_line_init();
+  uart0_set_input(serial_line_input_byte);
+  serial_line_init();
 
-  // energest_init();
-  // ENERGEST_ON(ENERGEST_TYPE_CPU);
+  energest_init();
+  ENERGEST_ON(ENERGEST_TYPE_CPU);
   printf("Main Initialization finished\r\n");
   autostart_start(autostart_processes);
-
-  //leds_on(LEDS_GREEN);
-
 
   watchdog_start();
   watchdog_stop(); /* Stop the wdt... */
@@ -198,6 +195,36 @@ int main(void)
       watchdog_periodic();
       r = process_run();
     } while(r > 0);
+
+    int s = splhigh();          /* Disable interrupts. */
+    /* uart1_active is for avoiding LPM3 when still sending or receiving */
+    if(process_nevents() != 0 || uart0_active()) {
+      splx(s);                  /* Re-enable interrupts. */
+    } else {
+      static unsigned long irq_energest = 0;
+
+      /* Re-enable interrupts and go to sleep atomically. */
+      ENERGEST_SWITCH(ENERGEST_TYPE_CPU, ENERGEST_TYPE_LPM);
+      /* We only want to measure the processing done in IRQs when we
+         are asleep, so we discard the processing time done when we
+         were awake. */
+      energest_type_set(ENERGEST_TYPE_IRQ, irq_energest);
+      watchdog_stop();
+      ctpl_enterLpm35(CTPL_DISABLE_RESTORE_ON_RESET); /* LPM3 sleep. This
+                                              statement will block
+                                              until the CPU is
+                                              woken up by an
+                                              interrupt that sets
+                                              the wake up flag. */
+
+      /* We get the current processing time for interrupts that was
+         done during the LPM and store it for next time around.  */
+      __disable_interrupt();
+      irq_energest = energest_type_time(ENERGEST_TYPE_IRQ);
+      __enable_interrupt();
+      watchdog_start();
+      ENERGEST_SWITCH(ENERGEST_TYPE_LPM, ENERGEST_TYPE_CPU);
+    }
   }
 }
 
@@ -264,120 +291,16 @@ ISR(ADC12, power)
 
             /* Reinitialize the ADC monitor since the ADC state is not retained. */
             initAdcMonitor();
-            uart0_init(115200);
-            set_uart_out(uart0_writeb);
-
             break;
         default: break;
     }
 }
 
-// int
-// main(int argc, char **argv)
-// {
-//   /*
-//    * Initalize hardware.
-//    */
-
-//   msp430_cpu_init();
-//   clock_init();
-//   leds_init();
-
-//   clock_wait(2);
-
-//   uart0_init(115200); /* Must come before first printf */
-//   set_uart_out(uart0_writeb);
-//   clock_wait(1);
-
-//   //rtimer_init();
-
-//   /*
-//    * Hardware initialization done!
-//    */
-
-//   //process_init();
-//   //process_start(&etimer_process, NULL);
-
-//   ctimer_init();
-  
-//   //process_start(&sensors_process, NULL);
-
-//   uart0_set_input(serial_line_input_byte);
-//   serial_line_init();
-
-  
-//   initAdcMonitor();
-
-//   energest_init();
-//   ENERGEST_ON(ENERGEST_TYPE_CPU);
-
-//   //print_processes(autostart_processes);
-//   //autostart_start(autostart_processes);
-
-//   //leds_on(LEDS_GREEN);
-//   printf("Main Initialization finished\r\n");
-//   /*
-//    * This is the scheduler loop.
-//    */
-//   watchdog_start();
-//   watchdog_stop(); /* Stop the wdt... */
-//   //while(1) {
- 
-//       P1DIR |= BIT0;
-//   P1OUT &= ~BIT0;
-//   while (1) {
-//       for (int i = 1; i < 5; i++) {
-//           for (int j = i; j > 0; j--) {
-//               /* Blink the LED for 0.1s and delay for 0.2s */
-//               P1OUT |= BIT0;
-//               __delay_cycles(F_CPU/8);
-//               P1OUT &= ~BIT0;
-//               __delay_cycles(F_CPU/8);
-//           }
-//           /* Delay 1 second between counts. */
-//           __delay_cycles(F_CPU);
-//       }
-//   }
-//     /*
-//      * Idle processing.
-//      */
-//     // int s = splhigh();          /* Disable interrupts. */
-//     // /* uart1_active is for avoiding LPM3 when still sending or receiving */
-//     // if(process_nevents() != 0 || uart0_active()) {
-//     //   splx(s);                  /* Re-enable interrupts. */
-//     // } else {
-//     //   static unsigned long irq_energest = 0;
-
-//     //   /* Re-enable interrupts and go to sleep atomically. */
-//     //   ENERGEST_SWITCH(ENERGEST_TYPE_CPU, ENERGEST_TYPE_LPM);
-//     //   /* We only want to measure the processing done in IRQs when we
-//     //      are asleep, so we discard the processing time done when we
-//     //      were awake. */
-//     //   energest_type_set(ENERGEST_TYPE_IRQ, irq_energest);
-//     //   watchdog_stop();
-//     //   _BIS_SR(GIE | SCG0 | SCG1 | CPUOFF); /* LPM3 sleep. This
-//     //                                           statement will block
-//     //                                           until the CPU is
-//     //                                           woken up by an
-//     //                                           interrupt that sets
-//     //                                           the wake up flag. */
-
-//     //   /* We get the current processing time for interrupts that was
-//     //      done during the LPM and store it for next time around.  */
-//     //   dint();
-//     //   irq_energest = energest_type_time(ENERGEST_TYPE_IRQ);
-//     //   eint();
-//     //   watchdog_start();
-//     //   ENERGEST_SWITCH(ENERGEST_TYPE_LPM, ENERGEST_TYPE_CPU);
-//     // }
-//   //}
-//   return 0;
-// }
-// /*---------------------------------------------------------------------------*/
-// #if LOG_CONF_ENABLED
-// void
-// log_message(char *m1, char *m2)
-// {
-//   printf("%s%s\n", m1, m2);
-// }
-// #endif /* LOG_CONF_ENABLED */
+/*---------------------------------------------------------------------------*/
+#if LOG_CONF_ENABLED
+void
+log_message(char *m1, char *m2)
+{
+  printf("%s%s\n", m1, m2);
+}
+#endif /* LOG_CONF_ENABLED */

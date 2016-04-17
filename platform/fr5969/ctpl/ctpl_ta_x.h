@@ -6,13 +6,13 @@
  * Visit http://www.ti.com/msp-fram-utilities for software information and
  * download.
  * --/COPYRIGHT--*/
-#ifndef CTPL_TA_1_H_
-#define CTPL_TA_1_H_
+#ifndef CTPL_TA_X_H_
+#define CTPL_TA_X_H_
 
 //******************************************************************************
 //
-//! \addtogroup ctpl_TA_1_api
-//! Compute Through Power Loss TA_1 Peripheral Definition
+//! \addtogroup ctpl_TA_X_api
+//! Compute Through Power Loss TA_X Peripheral Definition
 //! @{
 //
 //******************************************************************************
@@ -22,14 +22,14 @@
 
 //******************************************************************************
 //
-//! Length of FRAM storage for the TA_1 peripheral registers in 16-bit words.
+//! Length of FRAM storage for the TA_X peripheral registers in 16-bit words.
 //
 //******************************************************************************
-#define CTPL_TA_1_STORAGE_LENGTH       5
+#define CTPL_TA_X_STORAGE_LENGTH       5
 
 //******************************************************************************
 //
-//! Save function for the TA_1 peripheral.
+//! Save function for the TA_X peripheral.
 //!
 //! \param  baseAddress Peripheral base address.
 //! \param  storage     FRAM storage to save registers to.
@@ -38,11 +38,11 @@
 //! \return none
 //
 //******************************************************************************
-void ctpl_TA_1_save(uint16_t baseAddress, uint16_t *storage, uint16_t mode);
+void ctpl_TA_X_save(uint16_t baseAddress, uint16_t *storage, uint16_t mode);
 
 //******************************************************************************
 //
-//! Restore function for the TA_1 peripheral.
+//! Restore function for the TA_X peripheral.
 //!
 //! \param  baseAddress Peripheral base address.
 //! \param  storage     FRAM storage to save registers to.
@@ -51,14 +51,14 @@ void ctpl_TA_1_save(uint16_t baseAddress, uint16_t *storage, uint16_t mode);
 //! \return none
 //
 //******************************************************************************
-void ctpl_TA_1_restore(uint16_t baseAddress, uint16_t *storage, uint16_t mode);
+void ctpl_TA_X_restore(uint16_t baseAddress, uint16_t *storage, uint16_t mode);
 
 //******************************************************************************
 //
-//! Save function for the TA_1 peripheral.
+//! Epilogue function for the TA_X peripheral.
 //
 //******************************************************************************
-#define ctpl_TA_1_epilogue             NULL
+#define ctpl_TA_X_epilogue             NULL
 
 //******************************************************************************
 //
@@ -67,4 +67,4 @@ void ctpl_TA_1_restore(uint16_t baseAddress, uint16_t *storage, uint16_t mode);
 //
 //******************************************************************************
 
-#endif /* CTPL_TA_1_H_ */
+#endif /* CTPL_TA_X_H_ */

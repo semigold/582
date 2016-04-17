@@ -63,7 +63,7 @@
 // //#pragma vector = ADC12_VECTOR
 // //__interrupt void ADC12_ISR(void)
 
-// ISR(ADC12, power_loss) 
+// ISR(ADC12, power_loss)
 // {
 //     switch(__even_in_range(ADC12IV, 36)) {
 //         case 0:        break;        // Vector  0: No interrupt

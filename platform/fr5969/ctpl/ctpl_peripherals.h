@@ -22,7 +22,8 @@
 #include "ctpl_rc.h"
 #include "ctpl_rtc_b.h"
 #include "ctpl_rtc_c.h"
-#include "ctpl_ta_1.h"
+#include "ctpl_eusci_a_x.h"
+#include "ctpl_ta_x.h"
 #include "ctpl_sys.h"
 #include "ctpl_wdt_a.h"
 
