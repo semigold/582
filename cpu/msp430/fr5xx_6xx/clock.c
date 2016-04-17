@@ -148,7 +148,7 @@ void
 clock_init(void)
 {
   /* Disable interrupts */
-  dint();
+  __disable_interrupt();
 
   /* Initialize ccr1 to create the X ms interval. */
 
@@ -177,7 +177,7 @@ clock_init(void)
   count = 0;
 
   /* Enable interrupts. */
-  eint();
+  __enable_interrupt();
 
 }
 /*---------------------------------------------------------------------------*/

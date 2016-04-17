@@ -42,22 +42,19 @@ int msp430_dco_required;
 void
 msp430_init_dco(void)
 {
-#ifdef __IAR_SYSTEMS_ICC__
+
   __bis_SR_register(SCG0);
-#else
-  asmv("bis %0, r2" : : "i" (SCG0));
-#endif
 
   // Setup GPIO for XT1 Clock
 
   PJSEL0 |= BIT4 | BIT5;                    // For XT1
 
   // Clock System Setup
-  CSCTL0_H = CSKEY >> 8;                     // Unlock CS registers
+  CSCTL0_H = CSKEY_H;                     // Unlock CS registers
 
-  #if defined (__MSP430FR57XX_FAMILY__) || defined(__MSP430FR5739)
+  #if defined (__MSP430FR57XX_FAMILY__)
   CSCTL1 |= DCOFSEL_3;                       // Set DCO to 8MHz
-  #elif defined(__MSP430FR5XX_6XX_FAMILY__) || defined(__MSP430FR5969)
+  #elif defined(__MSP430FR5XX_6XX_FAMILY__)
   CSCTL1 |= DCOFSEL_6;                       // Set DCO to 8MHz
   #else
   #error "Set the DCO speed for your MCU family"
@@ -97,11 +94,7 @@ msp430_init_dco(void)
   } while (SFRIFG1 & OFIFG);                // Test oscillator fault flag
   CSCTL0_H = 0;                             // Lock CS registers
 
-#ifdef __IAR_SYSTEMS_ICC__
   __bic_SR_register(SCG0);
-#else
-  asmv("bic %0, r2" : : "i" (SCG0));
-#endif
 }
 /*---------------------------------------------------------------------------*/
 
@@ -327,11 +320,13 @@ msp430_remove_lpm_req(int req)
 void
 msp430_cpu_init(void)
 {
-  dint();
+  __disable_interrupt();
+
   watchdog_init();
   init_ports();
   msp430_init_dco();
-  eint();
+
+  __enable_interrupt();
 #if defined(__MSP430__) && defined(__GNUC__)
   if((uintptr_t)cur_break & 1) { /* Workaround for msp430-ld bug! */
     cur_break++;
@@ -379,13 +374,8 @@ splhigh_(void)
 {
   int sr;
   /* Clear the GIE (General Interrupt Enable) flag. */
-#ifdef __IAR_SYSTEMS_ICC__
   sr = __get_SR_register();
   __bic_SR_register(GIE);
-#else
-  asmv("mov r2, %0" : "=r" (sr));
-  asmv("bic %0, r2" : : "i" (GIE));
-#endif
   return sr & GIE;		/* Ignore other sr bits. */
 }
 

@@ -72,13 +72,13 @@ ISR(TIMER1_A0, timera0)
 void
 rtimer_arch_init(void)
 {
-  dint();
+  __disable_interrupt();
 
   /* CCR0 interrupt enabled, interrupt occurs when timer equals CCR0. */
   TA1CCTL0 = CCIE;
 
   /* Enable interrupts. */
-  eint();
+  __enable_interrupt();
 }
 /*---------------------------------------------------------------------------*/
 rtimer_clock_t
