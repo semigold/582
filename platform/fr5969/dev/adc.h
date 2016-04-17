@@ -1,8 +1,6 @@
 #ifndef ADC_H_
 #define ADC_H_
 
-//#include <msp430.h>
-//#include <ctpl.h>
 #include "contiki.h"
 #include "isr_compat.h"
 

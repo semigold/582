@@ -104,7 +104,7 @@ void uip_log(char *msg) { puts(msg); }
 #define NODE_ID 0x03
 #endif /* NODE_ID */
 /*---------------------------------------------------------------------------*/
-#if 1
+#if 0
 
 static void
 print_processes(struct process * const processes[])
@@ -112,10 +112,10 @@ print_processes(struct process * const processes[])
   /*  const struct process * const * p = processes;*/
   printf("Starting");
   while(*processes != NULL) {
-    printf(" %s", (*processes)->name);
+    //printf(" %s", (*processes)->name);
     processes++;
   }
-  putchar('\n');
+  printf("\r\n");
 }
 
 #endif /* !PROCESS_CONF_NO_PROCESS_NAMES */
@@ -133,25 +133,38 @@ putchar(int c) {
 
 SENSORS(&button_sensor, &button_sensor2);
 
-int
-main(int argc, char **argv)
-{
-  /*
-   * Initalize hardware.
-   */
+#define ADC_MONITOR_THRESHOLD   3.0
+#define ADC_MONITOR_FREQUENCY   8000
 
+#define MCLK_FREQUENCY          8000000
+#define SMCLK_FREQUENCY         8000000
+
+extern void initAdcMonitor(void);
+extern void stopAdcMonitor(void);
+
+int main(void)
+{
+
+  /* Halt the watchdog timer */
+  WDTCTL = WDTPW | WDTHOLD;
+
+  /* Initialize the GPIO, clock system and the ADC monitor. */
   msp430_cpu_init();
   clock_init();
   leds_init();
 
-  //leds_on(LEDS_RED);
   clock_wait(2);
 
   uart0_init(115200); /* Must come before first printf */
+
+  /* set the uart function that will write a byte to the uart module */
   set_uart_out(uart0_writeb);
+
   clock_wait(1);
 
   rtimer_init();
+
+  initAdcMonitor();
 
   /*
    * Hardware initialization done!
@@ -161,77 +174,210 @@ main(int argc, char **argv)
   process_start(&etimer_process, NULL);
 
   ctimer_init();
-  
+
   process_start(&sensors_process, NULL);
 
-  uart0_set_input(serial_line_input_byte);
-  serial_line_init();
+  //uart0_set_input(serial_line_input_byte);
+  //serial_line_init();
 
-  printf("Hello World\n");
-  initAdcMonitor();
-
-  energest_init();
-  ENERGEST_ON(ENERGEST_TYPE_CPU);
-
-  print_processes(autostart_processes);
+  // energest_init();
+  // ENERGEST_ON(ENERGEST_TYPE_CPU);
+  printf("Main Initialization finished\r\n");
   autostart_start(autostart_processes);
 
   //leds_on(LEDS_GREEN);
 
-  /*
-   * This is the scheduler loop.
-   */
+
   watchdog_start();
   watchdog_stop(); /* Stop the wdt... */
-  while(1) {
-    printf("Howdt World\r\n");
+
+  while (1) {
     int r;
     do {
       /* Reset watchdog. */
       watchdog_periodic();
       r = process_run();
     } while(r > 0);
+  }
+}
+
+void initAdcMonitor(void)
+{   
+    __disable_interrupt();
+    /* Initialize timer for ADC trigger. */
+    TA0CCR0 = (SMCLK_FREQUENCY/ADC_MONITOR_FREQUENCY);
+    TA0CCR1 = TA0CCR0/2;
+    TA0CCTL1 = OUTMOD_3;
+    TA0CTL = TASSEL__SMCLK | MC__UP;
+
+    /* Configure internal 2.0V reference. */
+    while(REFCTL0 & REFGENBUSY);
+    REFCTL0 |= REFVSEL_1 | REFON;
+    while(!(REFCTL0 & REFGENRDY));
 
     /*
-     * Idle processing.
+     * Initialize ADC12_B window comparator using the battery monitor.
+     * The monitor will first enable the high side to the monitor voltage plus
+     * 0.1v to make sure the voltage is sufficiently above the threshold. When
+     * the high side is triggered the interrupt service routine will switch to
+     * the low side and wait for the voltage to drop below the threshold. When
+     * the voltage drops below the threshold voltage the device will invoke the
+     * compute through power loss shutdown function to save the application
+     * state and enter complete device shutdown.
      */
-    int s = splhigh();          /* Disable interrupts. */
-    /* uart1_active is for avoiding LPM3 when still sending or receiving */
-    if(process_nevents() != 0 || uart0_active()) {
-      splx(s);                  /* Re-enable interrupts. */
-    } else {
-      static unsigned long irq_energest = 0;
-
-      /* Re-enable interrupts and go to sleep atomically. */
-      ENERGEST_SWITCH(ENERGEST_TYPE_CPU, ENERGEST_TYPE_LPM);
-      /* We only want to measure the processing done in IRQs when we
-         are asleep, so we discard the processing time done when we
-         were awake. */
-      energest_type_set(ENERGEST_TYPE_IRQ, irq_energest);
-      watchdog_stop();
-      _BIS_SR(GIE | SCG0 | SCG1 | CPUOFF); /* LPM3 sleep. This
-                                              statement will block
-                                              until the CPU is
-                                              woken up by an
-                                              interrupt that sets
-                                              the wake up flag. */
-
-      /* We get the current processing time for interrupts that was
-         done during the LPM and store it for next time around.  */
-      dint();
-      irq_energest = energest_type_time(ENERGEST_TYPE_IRQ);
-      eint();
-      watchdog_start();
-      ENERGEST_SWITCH(ENERGEST_TYPE_LPM, ENERGEST_TYPE_CPU);
-    }
-  }
-  return 0;
+    ADC12CTL0 = ADC12SHT0_2 | ADC12ON;
+    ADC12CTL1 = ADC12SHS_1 | ADC12SSEL_0 | ADC12CONSEQ_2 | ADC12SHP;
+    ADC12CTL3 = ADC12BATMAP;
+    ADC12MCTL0 = ADC12INCH_31 | ADC12VRSEL_1 | ADC12WINC;
+    ADC12HI = (uint16_t)(4096*((ADC_MONITOR_THRESHOLD+0.1)/2)/(2.0));
+    ADC12LO = (uint16_t)(4096*(ADC_MONITOR_THRESHOLD/2)/(2.0));
+    ADC12IFGR2 &= ~(ADC12HIIFG | ADC12LOIFG);
+    ADC12IER2 = ADC12HIIE;
+    ADC12CTL0 |= ADC12ENC;
+    __enable_interrupt();
 }
-/*---------------------------------------------------------------------------*/
-#if LOG_CONF_ENABLED
-void
-log_message(char *m1, char *m2)
+
+void stopAdcMonitor(void)
 {
-  printf("%s%s\n", m1, m2);
+    /* Stop the timer, reference and ADC. */
+    TA0CTL &= ~MC_3;
+    REFCTL0 &= ~REFON;
+    ADC12CTL0 &= ~(ADC12ENC | ADC12ON);
 }
-#endif /* LOG_CONF_ENABLED */
+
+ISR(ADC12, power)
+{
+    switch(__even_in_range(ADC12IV, ADC12IV_ADC12LOIFG)) {
+        case ADC12IV_NONE:        break;        // Vector  0: No interrupt
+        case ADC12IV_ADC12OVIFG:  break;        // Vector  2: ADC12MEMx Overflow
+        case ADC12IV_ADC12TOVIFG: break;        // Vector  4: Conversion time overflow
+        case ADC12IV_ADC12HIIFG:                // Vector  6: Window comparator high side
+            /* Disable the high side and enable the low side interrupt. */
+            ADC12IER2 &= ~ADC12HIIE;
+            ADC12IER2 |= ADC12LOIE;
+            ADC12IFGR2 &= ~ADC12LOIFG;
+            break;
+        case ADC12IV_ADC12LOIFG:                // Vector  8: Window comparator low side
+            /* Stop the ADC monitor and enter device shutdown with 64ms timeout. */
+            stopAdcMonitor();
+            ctpl_enterShutdown(CTPL_SHUTDOWN_TIMEOUT_64_MS);
+
+            /* Reinitialize the ADC monitor since the ADC state is not retained. */
+            initAdcMonitor();
+            uart0_init(115200);
+            set_uart_out(uart0_writeb);
+
+            break;
+        default: break;
+    }
+}
+
+// int
+// main(int argc, char **argv)
+// {
+//   /*
+//    * Initalize hardware.
+//    */
+
+//   msp430_cpu_init();
+//   clock_init();
+//   leds_init();
+
+//   clock_wait(2);
+
+//   uart0_init(115200); /* Must come before first printf */
+//   set_uart_out(uart0_writeb);
+//   clock_wait(1);
+
+//   //rtimer_init();
+
+//   /*
+//    * Hardware initialization done!
+//    */
+
+//   //process_init();
+//   //process_start(&etimer_process, NULL);
+
+//   ctimer_init();
+  
+//   //process_start(&sensors_process, NULL);
+
+//   uart0_set_input(serial_line_input_byte);
+//   serial_line_init();
+
+  
+//   initAdcMonitor();
+
+//   energest_init();
+//   ENERGEST_ON(ENERGEST_TYPE_CPU);
+
+//   //print_processes(autostart_processes);
+//   //autostart_start(autostart_processes);
+
+//   //leds_on(LEDS_GREEN);
+//   printf("Main Initialization finished\r\n");
+//   /*
+//    * This is the scheduler loop.
+//    */
+//   watchdog_start();
+//   watchdog_stop(); /* Stop the wdt... */
+//   //while(1) {
+ 
+//       P1DIR |= BIT0;
+//   P1OUT &= ~BIT0;
+//   while (1) {
+//       for (int i = 1; i < 5; i++) {
+//           for (int j = i; j > 0; j--) {
+//               /* Blink the LED for 0.1s and delay for 0.2s */
+//               P1OUT |= BIT0;
+//               __delay_cycles(F_CPU/8);
+//               P1OUT &= ~BIT0;
+//               __delay_cycles(F_CPU/8);
+//           }
+//           /* Delay 1 second between counts. */
+//           __delay_cycles(F_CPU);
+//       }
+//   }
+//     /*
+//      * Idle processing.
+//      */
+//     // int s = splhigh();          /* Disable interrupts. */
+//     // /* uart1_active is for avoiding LPM3 when still sending or receiving */
+//     // if(process_nevents() != 0 || uart0_active()) {
+//     //   splx(s);                  /* Re-enable interrupts. */
+//     // } else {
+//     //   static unsigned long irq_energest = 0;
+
+//     //   /* Re-enable interrupts and go to sleep atomically. */
+//     //   ENERGEST_SWITCH(ENERGEST_TYPE_CPU, ENERGEST_TYPE_LPM);
+//     //   /* We only want to measure the processing done in IRQs when we
+//     //      are asleep, so we discard the processing time done when we
+//     //      were awake. */
+//     //   energest_type_set(ENERGEST_TYPE_IRQ, irq_energest);
+//     //   watchdog_stop();
+//     //   _BIS_SR(GIE | SCG0 | SCG1 | CPUOFF); /* LPM3 sleep. This
+//     //                                           statement will block
+//     //                                           until the CPU is
+//     //                                           woken up by an
+//     //                                           interrupt that sets
+//     //                                           the wake up flag. */
+
+//     //   /* We get the current processing time for interrupts that was
+//     //      done during the LPM and store it for next time around.  */
+//     //   dint();
+//     //   irq_energest = energest_type_time(ENERGEST_TYPE_IRQ);
+//     //   eint();
+//     //   watchdog_start();
+//     //   ENERGEST_SWITCH(ENERGEST_TYPE_LPM, ENERGEST_TYPE_CPU);
+//     // }
+//   //}
+//   return 0;
+// }
+// /*---------------------------------------------------------------------------*/
+// #if LOG_CONF_ENABLED
+// void
+// log_message(char *m1, char *m2)
+// {
+//   printf("%s%s\n", m1, m2);
+// }
+// #endif /* LOG_CONF_ENABLED */

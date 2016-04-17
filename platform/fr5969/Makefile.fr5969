@@ -13,7 +13,8 @@ CTPL=ctpl.c ctpl_msp430fr5969.c   \
     ctpl_rtc_c.c  ctpl_wdt_a.c    \
     ctpl_fram.c ctpl_mpu_fr57xx.c \
     ctpl_pmm.c  ctpl_port_int.c   \
-    ctpl_rtc_b.c  ctpl_sys.c
+    ctpl_rtc_b.c  ctpl_sys.c      \
+    ctpl_ta_1.c
 
 CONTIKI_TARGET_DIRS = . dev apps net ctpl
 ifndef CONTIKI_TARGET_MAIN
@@ -38,9 +39,9 @@ TARGET_MEMORY_MODEL=large
 ifdef TI-GCC
 CFLAGS += -I ~/ti2/gcc/include
 ifdef CTPL
-CFLAGS += -DCTPL_STACK_SIZE=160
+CFLAGS += -DCTPL_STACK_SIZE=2048
 LDFLAGS += -L $(CONTIKI)/platform/fr5969/ldscripts/
-ASFLAGS += -I ~/ti2/gcc/include -DCTPL_STACK_SIZE=160
+ASFLAGS += -I ~/ti2/gcc/include -DCTPL_STACK_SIZE=2048
 else
 LDFLAGS += -L ~/ti2/gcc/include
 endif

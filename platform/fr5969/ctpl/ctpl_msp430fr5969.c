@@ -30,6 +30,7 @@
 #define CTPL_SAVE_PMM
 #define CTPL_SAVE_SYS
 #define CTPL_SAVE_RTC_B
+#define CTPL_SAVE_TA_1
 #define CTPL_SAVE_MPY32
 #define CTPL_SAVE_CS
 #define CTPL_SAVE_WDT_A
@@ -136,6 +137,18 @@ const ctpl_peripheral ctpl_RTC_B = {
 };
 #endif
 
+#ifdef CTPL_SAVE_TA_1
+uint16_t ctpl_TA_1_storage[CTPL_TA_1_STORAGE_LENGTH];
+
+const ctpl_peripheral ctpl_TA_1 = {
+    __MSP430_BASEADDRESS_T1A3__,
+    ctpl_TA_1_storage,
+    ctpl_TA_1_save,
+    ctpl_TA_1_restore,
+    ctpl_TA_1_epilogue
+};
+#endif
+
 #ifdef CTPL_SAVE_MPY32
 uint16_t ctpl_MPY32_storage[CTPL_MPY32_STORAGE_LENGTH];
 
@@ -196,6 +209,9 @@ const ctpl_peripheral *ctpl_peripherals[] = {
 #endif
 #ifdef CTPL_SAVE_RTC_B
     &ctpl_RTC_B,
+#endif
+#ifdef CTPL_SAVE_TA_1
+    &ctpl_TA_1,
 #endif
 #ifdef CTPL_SAVE_MPY32
     &ctpl_MPY32,
