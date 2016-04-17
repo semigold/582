@@ -47,8 +47,12 @@ AUTOSTART_PROCESSES(&hello_world_process);
 PROCESS_THREAD(hello_world_process, ev, data)
 {
   PROCESS_BEGIN();
-
-  printf("Hello, world\n");
+  int i = 0;
+  while(1) {
+    printf("Hello World! %d\r\n", i);
+    i++;
+    __delay_cycles(F_CPU);
+  }
   
   PROCESS_END();
 }

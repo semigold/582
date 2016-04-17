@@ -14,17 +14,17 @@ PROCESS_THREAD(blink_process, ev, data)
     
     /* Initialize stuff here. */
     
-    printf("++++++++++++++++++++++++++++++\n");
-    printf("+  LESSON 1, FIRST EXERCISE  +\n");
-    printf("++++++++++++++++++++++++++++++\n");
-    printf("+ Blink app w/ button sensor +\n");
-    printf("++++++++++++++++++++++++++++++\n\n");
+    printf("\r\n++++++++++++++++++++++++++++++\r\n");
+    printf("+  LESSON 1, FIRST EXERCISE  +\r\n");
+    printf("++++++++++++++++++++++++++++++\r\n");
+    printf("+ Blink app w/ button sensor +\r\n");
+    printf("++++++++++++++++++++++++++++++\r\n\r\n");
     
     SENSORS_ACTIVATE(button_sensor);
     SENSORS_ACTIVATE(button_sensor2);
     //leds_on(LEDS_ALL);
-    printf("+     All leds are on     +\n\n");
-    printf("Press the user button to begin\n\n");
+    printf("+     All leds are on     +\r\n\r\n");
+    printf("Press the user button to begin\r\n\r\n");
     
     while(1) {
         /* Do the rest of the stuff here. */

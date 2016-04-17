@@ -1,4 +1,4 @@
-CONTIKI_PROJECT = button_test
+CONTIKI_PROJECT = pi_demo
 all: $(CONTIKI_PROJECT)
 
 CONTIKI = ../..
