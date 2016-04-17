@@ -36,9 +36,9 @@
 #include "sys/timer.h"
 #include "sys/rtimer.h"
 
-PROCESS(process1, "ETimer x Timer x STimer Process");
-PROCESS(process2, "CTimer Process 2");
-PROCESS(process3, "RTimer Process 3");
+PROCESS(process1, "ETimer x Timer x STimer Process\r\n");
+PROCESS(process2, "CTimer Process 2\r\n");
+PROCESS(process3, "RTimer Process 3\r\n");
 AUTOSTART_PROCESSES(&process1, &process2, &process3);
 
 static int counter_etimer;
@@ -64,7 +64,7 @@ do_timeout1()
     counter_stimer++;
   }
 
-  printf("\nProcess 1: %s", counter_timer == counter_etimer
+  printf("\nProcess 1: %s\r\n", counter_timer == counter_etimer
          && counter_timer == counter_stimer ? "SUCCESS" : "FAIL");
 }
 /*---------------------------------------------------------------------------*/
@@ -72,7 +72,7 @@ void
 do_timeout2()
 {
   ctimer_reset(&timer_ctimer);
-  printf("\nProcess 2: CTimer callback called");
+  printf("\r\nProcess 2: CTimer callback called\r\n");
   counter_ctimer++;
 }
 /*---------------------------------------------------------------------------*/
@@ -81,7 +81,7 @@ do_timeout3(struct rtimer *timer, void *ptr)
 {
   counter_rtimer++;
 
-  printf("\nProcess 3: RTimer callback called");
+  printf("\r\nProcess 3: RTimer callback called\r\n");
 
   /* Re-arm rtimer */
   rtimer_set(&timer_rtimer, RTIMER_NOW() + timeout_rtimer, 0, do_timeout3,
